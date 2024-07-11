@@ -3,6 +3,8 @@ from typing import Optional
 from bson import ObjectId
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
+from auth.exceptions.user_exceptions import PasswordDontContainSpecialCharecters
+
 class UserModel(BaseModel):
     id: Optional[ObjectId] = Field(default_factory=ObjectId, alias="_id")
     first_name: str
@@ -22,8 +24,8 @@ class UserModel(BaseModel):
 class UserModelRegister(UserModel):
     confirm_password: str
 
-    @field_validator("password")
-    def validation_passwords(cls, value):
+    @field_validator("password", "confirm_password")
+    def validation_password(cls, values):
         """
         This validation allows you to check if the password 
         contains special characters
@@ -36,27 +38,9 @@ class UserModelRegister(UserModel):
         -------
         value (str): Password introduced from the user
         """
-        if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", value):
-            raise Exception("Password must contain at least one special character.")
-        return value
-    
-    @field_validator("confirm_password")
-    def validation_passwords_match(cls, value):
-        """
-        This validation allows you to check if the 
-        password contains special characters
-
-        Args:
-        ----
-        value (str): Password introduced from the user
-
-        Returns:
-        -------
-        value (str): Password introduced from the user
-        """
-        if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", value):
-            raise Exception("Confirm password must contain at least one special character.")
-        return value
+        if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", values):
+            raise PasswordDontContainSpecialCharecters()
+        return values
     
     @field_validator("first_name", "last_name")
     def validation_first_name_and_last_name(cls, value):

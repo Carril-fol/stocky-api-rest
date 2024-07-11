@@ -84,17 +84,8 @@ class UserService:
         user_exists = self.__check_user_exists_by_id(user_id)
         if not user_exists:
             raise UserNotFoundException()
-        user_model_instance = UserModel(
-            id=user_exists["_id"],
-            first_name=user_exists["first_name"],
-            last_name=user_exists["last_name"],
-            email=user_exists["email"],
-            password=user_exists["password"],
-            is_authenticated=user_exists["is_authenticated"],
-            is_admin=user_exists["is_admin"],
-            is_superuser=user_exists["is_superuser"]
-        ).model_dump_json()
-        return user_model_instance
+        user_model_json_instance = UserModel.model_validate(user_exists).model_dump_json()
+        return user_model_json_instance
 
     def get_user_by_email(self, user_email: str) -> UserModel:
         """
@@ -109,17 +100,8 @@ class UserService:
         user_exists = self.__check_user_exists_by_email(user_email)
         if not user_exists:
             raise UserNotFoundException()
-        user_model_instance = UserModel(
-            id=user_exists["_id"],
-            first_name=user_exists["first_name"],
-            last_name=user_exists["last_name"],
-            email=user_exists["email"],
-            password=user_exists["password"],
-            is_authenticated=user_exists["is_authenticated"],
-            is_admin=user_exists["is_admin"],
-            is_superuser=user_exists["is_superuser"]
-        )
-        return user_model_instance
+        user_model_json_instance = UserModel.model_validate(user_exists).model_dump_json()
+        return user_model_json_instance
 
     def create_user(self, first_name: str, last_name: str, email: str, password: str, confirm_password: str) -> InsertOneResult:
         """
@@ -147,7 +129,7 @@ class UserService:
             password=password,
             confirm_password=confirm_password
         )
-        password_hashed = self.__hash_password(user_instance_model_register.confirm_password)
+        password_hashed = self.__hash_password(user_instance_model_register.password)
         passwords_check_hashed = self.__verify_password(password_hashed, confirm_password)
         if not passwords_check_hashed:
             raise PasswordDontMatch()
@@ -180,14 +162,5 @@ class UserService:
         verification_password = self.__verify_password(password_user_stored, password)
         if not verification_password:
             raise PasswordDontMatch()
-        user_model_instance = UserModel(
-            id=user_exists["_id"],
-            first_name=user_exists["first_name"],
-            last_name=user_exists["last_name"],
-            email=user_exists["email"],
-            password=user_exists["password"],
-            is_authenticated=user_exists["is_authenticated"],
-            is_admin=user_exists["is_admin"],
-            is_superuser=user_exists["is_superuser"]
-        ).model_dump_json()
-        return user_model_instance
+        user_model_json_instance = UserModel.model_validate(user_exists).model_dump_json()
+        return user_model_json_instance

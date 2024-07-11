@@ -13,7 +13,7 @@ class Database(object):
         """
         Return a instance from the users collection in the database
         """
-        users_collection = self.database["user_accounts"]
+        users_collection = self.database["users_accounts"]
         return users_collection
     
     def products_collection(self):

@@ -18,3 +18,9 @@ class PasswordDontMatch(UserException):
     def __init__(self, message = "Passwords don't match"):
         self.message = message
         super().__init__(self.message)
+
+
+class PasswordDontContainSpecialCharecters(UserException):
+    def __init__(self, message = "Password must contain at least one special character."):
+        self.message = message
+        super().__init__(self.message)
