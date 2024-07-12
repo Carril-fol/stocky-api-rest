@@ -12,8 +12,7 @@ class ProductDetailCreateResource(Resource):
     """
     Example:
 
-    POST: /products/details/create
-
+    POST: /products/detail/api/v1/create
     ```
     Application data:
     {
@@ -33,6 +32,10 @@ class ProductDetailCreateResource(Resource):
         }
     }
 
+    Response with errors (code 400 - BAD REQUEST):
+    {
+        "error": "Not existing barcode"
+    }
     ```
     """
     def post(self):
@@ -45,7 +48,7 @@ class ProductDetailCreateResource(Resource):
                 data["barcode"],
                 data["status"]
             )
-            product_detail_instance = product_detail_service.get_product_detail_by_barcode(product_detail_created.barcode).model_dump_json()
+            product_detail_instance = product_detail_service.get_product_detail_by_barcode(product_detail_created.barcode)
             response_data_product_detail = json.loads(product_detail_instance)
             return {"msg": "Product detail created", "product detail": response_data_product_detail}, 201
         except Exception as error:
@@ -53,14 +56,34 @@ class ProductDetailCreateResource(Resource):
         
 
 class ProductDetailGetResource(Resource):
-    
+    """
+    Example:
+
+    GET: /product/detail/api/v1/<barcode>
+    ```
+    Successful response (code 201 - CREATED):
+    {
+        "product": {
+            "id": "Id from the product detail",
+            "product_id": "Id from the product father",
+            "barcode": "Barcode from the product detail",
+            "status": "Status from the product"
+        }
+    }
+
+    Response with errors (code 400 - BAD REQUEST):
+    {
+        "error": "Not existing barcode"
+    }
+    ```
+    """
     def get(self, barcode: str):
         try:
-            product_details_instance = product_detail_service.get_product_detail_by_barcode(barcode).model_dump_json()
+            product_details_instance = product_detail_service.get_product_detail_by_barcode(barcode)
             response_data_product_detail = json.loads(product_details_instance)
             return {"product": response_data_product_detail}, 200
         except Exception as error:
-            return {"error": str(error)}, 400
+            return {"error": str(error)}, 404
         
 
 class ProductDetailUpdateResource(Resource):
@@ -73,10 +96,10 @@ class ProductDetailUpdateResource(Resource):
             return {"error": "Missing barcode in the request"}, 400
         try:
             product_detail_update = product_detail_service.update_product_detail(
-            data["barcode"],
-            data["status"]
-        )
-            produdct_detail_updated = product_detail_service.get_product_detail_by_barcode(barcode).model_dump_json()
+                data["barcode"],
+                data["status"]
+            )
+            produdct_detail_updated = product_detail_service.get_product_detail_by_barcode(barcode)
             response_product_detail_data = json.loads(produdct_detail_updated)
             return {"product": response_product_detail_data}, 200
         except Exception as error:
@@ -84,12 +107,27 @@ class ProductDetailUpdateResource(Resource):
         
 
 class ProductDetailDeleteResource(Resource):
-    
+    """
+    Example:
+
+    DELETE: /product/detail/api/v1/delete/<barcode>
+    ```
+    Successful response (code 200 - CREATED):
+    {
+        "product": "Deleted"
+    }
+
+    Response with errors (code 400 - BAD REQUEST):
+    {
+        "error": "Not existing barcode"
+    }
+    ```
+    """
     def delete(self, barcode: str):
         if not barcode:
             return {"error": "Missing barcode in the request"}, 400
         try:
             product_detail_delete = product_detail_service.delete_product_detail(barcode)
-            return {"product": "deleted"}, 200
+            return {"product": "Deleted"}, 200
         except Exception as error:
             return {"error": str(error)}, 400

@@ -4,6 +4,7 @@ class ProductException(Exception):
 
 class NotExistingProductFather(ProductException):
     """
+    Exception raised when a product father not exists
     """
     def __init__(self, message="Product father no founded"):
         self.message = message
@@ -33,5 +34,12 @@ class CannotCreateProductDetailsException(ProductException):
     Exception raised when cannot create more product details.
     """
     def __init__(self, message="Cannot create more product details for this product"):
+        self.message = message
+        super().__init__(self.message)
+
+
+class ProductNotFound(ProductException):
+
+    def __init__(self, message="The entered product was not found"):
         self.message = message
         super().__init__(self.message)

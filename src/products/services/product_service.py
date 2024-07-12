@@ -1,8 +1,10 @@
 from bson import ObjectId
-
 from products.repositories.product_repository import ProductRepository
 from products.models.product_model import ProductModel
 from categories.services.category_service import CategoryService
+from products.exceptions.products_exceptions import ProductNotFound
+from categories.exceptions.categories_exceptions import CategoryNotFound
+
 
 class ProductService:
     def __init__(self):
@@ -16,6 +18,21 @@ class ProductService:
         """
         self.product_repository = ProductRepository()
         self.category_service = CategoryService()
+
+    def __check_product_exists(self, product_id):
+        """
+        Check if a product with the given ID exists.
+
+        Args:
+        ----
+        product_id (str): The ID of the product to check.
+
+        Returns:
+        -------
+        product_instance: If product_instance exists return the corresponding dictionary, else return False
+        """
+        product_instance = self.product_repository.get_product_by_id(product_id)
+        return product_instance if product_instance else False 
 
     def create_product(self, name_product: str, quantity_product: int, price: int, category_id: str) -> ProductModel:
         """
@@ -32,9 +49,9 @@ class ProductService:
         -------
         ProductModel: The created product instance with its data populated from the database.
         """
-        category_found = self.category_service.get_category_by_id(category_id)
+        category_found = self.category_service.__category_exists_by_id(category_id)
         if not category_found:
-            raise Exception("Category not founded")
+            raise CategoryNotFound()
         product_model_instance = ProductModel(
             name_product=name_product,
             quantity_product=quantity_product,
@@ -55,16 +72,10 @@ class ProductService:
         ProductModel: The retrieved product instance populated with data from the database.
                     Returns None if no product is found with the provided ID.
         """
-        product_instance = self.product_repository.get_product_by_id(product_id)
+        product_instance = self.__check_product_exists(product_id)
         if not product_instance:
-            raise Exception("The entered product was not found")
-        product_model_instance = ProductModel(
-            id=product_instance["_id"],
-            name_product=product_instance["name_product"], 
-            quantity_product=product_instance["quantity_product"],
-            price=product_instance["price"],
-            category_id=product_instance["category_id"]
-        ).model_dump_json()
+            raise ProductNotFound()
+        product_model_instance = ProductModel.model_validate(product_instance).model_dump_json()
         return product_model_instance
 
     def update_product(self, product_id: str, name_product: str, quantity_product: int, price: int, category_id: str) -> ProductModel:
@@ -80,9 +91,9 @@ class ProductService:
         ProductModel: The updated product instance populated with the new data.
                     Returns None if the product does not exist.
         """
-        product_instance = self.product_repository.get_product_by_id(product_id)
+        product_instance = self.__check_product_exists(product_id)
         if not product_instance:
-            raise Exception("The entered product was not found")
+            raise ProductNotFound()
         product_model_instance = ProductModel(
             name_product=name_product, 
             quantity_product=quantity_product, 
@@ -103,8 +114,8 @@ class ProductService:
         ProductModel: The deleted product instance populated with the data before deletion.
                     Returns None if no product is found with the provided ID.
         """
-        product_instance = self.product_repository.get_product_by_id(product_id)
+        product_instance = self.__check_product_exists(product_id)
         if not product_instance:
-            raise Exception("The entered product was not found")   
+            raise ProductNotFound()
         product_deleted = self.product_repository.delete_product(product_id)
         return product_deleted

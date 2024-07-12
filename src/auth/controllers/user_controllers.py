@@ -50,7 +50,6 @@ class UserRegisterResource(Resource):
     }
     ```
     """
-    
     def post(self):
         data = request.get_json()
         if not data:
@@ -98,7 +97,6 @@ class UserLoginResource(Resource):
     }
     ```
     """
-    
     def post(self):
         data = request.get_json()
         if not data:
@@ -143,7 +141,6 @@ class UserDetailsResource(Resource):
     }
     ```
     """
-    
     @jwt_required(locations=["headers"], optional=False)
     @token_not_in_blacklist
     def get(self, user_id: str):
@@ -179,7 +176,6 @@ class UserLogoutResource(Resource):
     }
     ```
     """
-
     @jwt_required(locations=["headers"], optional=False)
     def post(self):
         try:

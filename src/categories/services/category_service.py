@@ -14,7 +14,7 @@ class CategoryService:
         """
         self.category_repository =  CategoryRepository()
 
-    def __category_exists_by_name(self, name: str) -> bool:
+    def __category_exists_by_name(self, name: str):
         """
         Check if a category with the given name exists.
 
@@ -27,9 +27,9 @@ class CategoryService:
         bool: `True` if the category exists, `False` otherwise.
         """
         category_exists = self.category_repository.get_category_by_name(name)
-        return bool(category_exists)
+        return category_exists if category_exists else False
     
-    def __category_exists_by_id(self, category_id: str) -> bool:
+    def __category_exists_by_id(self, category_id: str):
         """
         Check if a category with the given name exists.
 
@@ -42,7 +42,7 @@ class CategoryService:
         bool: `True` if the category exists, `False` otherwise.
         """
         category_exists = self.category_repository.get_category_by_id(category_id)
-        return True if category_exists else None
+        return category_exists if category_exists else False
         
     def create_category(self, name: str):
         """
@@ -86,8 +86,7 @@ class CategoryService:
         category_exists = self.__category_exists_by_name(name)
         if not category_exists:
             raise CategoryNotFound()
-        category_founded = self.category_repository.get_category_by_name(name)
-        category = CategoryModel(name=category_founded["name"]).model_dump_json()
+        category = CategoryModel.model_validate(category_exists).model_dump_json()
         return category
     
     def get_category_by_id(self, category_id: str) -> CategoryModel:
@@ -109,8 +108,7 @@ class CategoryService:
         category_exists = self.__category_exists_by_id(category_id)
         if not category_exists:
             raise CategoryNotFound()
-        category_founded = self.category_repository.get_category_by_id(category_id)
-        category = CategoryModel(name=category_founded["name"]).model_dump_json()
+        category = CategoryModel.model_validate(category_exists).model_dump_json()
         return category
     
     def get_all_categories(self) -> list:

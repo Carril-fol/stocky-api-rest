@@ -36,7 +36,7 @@ class ProductCreateResource(Resource):
 
     Response with errors from model (code 400 - BAD REQUEST):
     {
-        "cantProduct": "The quantity of the product cannot be less than 0."
+        "quantity_product": "The quantity of the product cannot be less than 0."
     }
     ```
     """
@@ -77,7 +77,7 @@ class ProductDetailByIdResource(Resource):
         }
     }
 
-    Response with errors (code 404 - NOT FOUND):
+    Response with errors (code 400 - BAD REQUEST):
     {
         "error": "Product not found"
     }

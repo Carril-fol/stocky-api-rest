@@ -35,7 +35,7 @@ api.add_resource(ProductUpdateResource, "/product/api/v1/update/<product_id>")
 
 api.add_resource(ProductDetailCreateResource, "/product/detail/api/v1/create")
 api.add_resource(ProductDetailGetResource, "/product/detail/api/v1/<barcode>")
-api.add_resource(ProductDetailDeleteResource, "/product/detail/delete/api/v1/<barcode>")
+api.add_resource(ProductDetailDeleteResource, "/product/detail/api/v1/delete/<barcode>")
 
 api.add_resource(CategoryCreateResource, "/categories/api/v1/create")
 api.add_resource(CategoryDetailByNameResource, "/categories/api/v1/<name>")
