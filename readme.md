@@ -1,24 +1,51 @@
-# Invetory-Management-System-API-RESTful
+<h1 align="center"> Invetory Management System API REST</h1>
 
-**Inventory Management System RESTful API** is one of my personal projects focused on managing inventory through a RESTful API. This repository contains the backend code for the API.
+<h4 align="center">A monolithic REST API for product inventory management. This API allows you to manage products with all their details, as well as their categories.</h4>
+
+<p align="center">
+  <a href="https://saythanks.io/to/bullredeyes@gmail.com">
+      <img src="https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54" alt="python">
+  </a>
+  <a href="https://badge.fury.io/js/electron-markdownify">
+    <img src="https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white" alt="mongodb">
+  </a>
+  <a href="https://gitter.im/amitmerchant1990/electron-markdownify">
+    <img src="https://img.shields.io/badge/flask-%23000.svg?style=for-the-badge&logo=flask&logoColor=white" alt="flask">
+  </a>
+  <a>
+    <img src="https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white" alt="docker">
+  </a>
+  <a>
+    <img src="https://img.shields.io/badge/Render-%234f0599.svg?style=for-the-badge&logo=render&logoColor=white" alt="render">
+  </a>
+</p>
 
 ### Contents
 
 - [Features](#features)
 - [Tech used](#tech-used)
-- [How to get the project](#how-to-get-the-project) 
+- [How to get the project](#how-to-get-the-project)
+- [Deploy the project in render](#deploy-in-render)
 - [Run the project using docker](#run-the-project-using-docker) 
 - [API endpoints](#api-endpoints) 
 
 ## Features:
-- Users can create their profiles (JWT authentication)
-- Users can edit their profile
-- Users can write posts. They can set the tag of their posts
-- Registered users can comment on their own or others blog
-- Unregistered public users can read blogs but can't comment or react n blogs
-- Posts of a particular category can be viewed for unregistered publics users and registered users
-- Users can create comments on posts they like
-- Users can modify or delete their comments on the respective posts
+
+- Register account: Users can register their accounts.
+- Login account: Users can log in their accounts.
+- Log out account: Users can log out from their accounts.
+- Create products: Users can create products for they management.
+- Update products: Users can modify the details of their products, such as name, price, and quantity.
+- Delete products: Users can delete products.
+- View product details: Users can view detailed information about a specific product, including all associated details.
+- Create categories: Users can create categories for the products.
+- Detail categories: Users can get detail from the categories.
+- Update categories: Users can modify the categories.
+- Delete categories: Users can delete categories.
+- Create detail of products: Users can create products that make up the parent product.
+- Delete detail of products: Users can delete details from products.
+- Get detail products: Users can get the products that make up a parent product.
+- Update detail of products: Users can update the products that make up a parent product.
 
 ## Tech used:
 
@@ -54,8 +81,13 @@ docker pull carrilfol/restful-inventory-management-system
 ```
 3. Now you need to run the image you just downloaded in docker, with the following command
 ```bash
-docker run -p [PORT TO EXPOSE]:5000 carrilfol restful-inventory-management-system
+docker run -p [PORT TO EXPOSE]:5000 carrilfol/restful-inventory-management-system
 ```
+
+## Deploy in render:
+You can access the live version of the application here (this can be a bit burdensome since the server has to be initialized): 
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://restful-inventory-management-system.onrender.com)
 
 ## API endpoints:
 

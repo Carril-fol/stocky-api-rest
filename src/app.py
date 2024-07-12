@@ -8,6 +8,7 @@ from auth.controllers.user_controllers import *
 from categories.controllers.category_controllers import *
 from products.controllers.products_controllers import *
 from products.controllers.products_details_controllers import *
+from core.controllers.core_controllers import *
 
 # Flask
 # https://flask.palletsprojects.com/en/3.0.x/
@@ -22,6 +23,8 @@ jwt.init_app(app)
 # Flask-Restful
 # https://flask-restful.readthedocs.io/en/latest/index.html
 api = Api(app)
+
+api.add_resource(HomeResource, "/")
 
 api.add_resource(UserRegisterResource, "/users/api/v1/register")
 api.add_resource(UserLoginResource, "/users/api/v1/login")
