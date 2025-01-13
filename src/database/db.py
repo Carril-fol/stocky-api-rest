@@ -1,42 +1,25 @@
 from dotenv import load_dotenv
-from pymongo import MongoClient
-from settings import MONGO_URI
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker, Session
+from settings import Config
 load_dotenv()
 
-class Database(object):
-    def __init__(self):
-        self.__uri = MONGO_URI
-        self.client = MongoClient(self.__uri)
-        self.database = self.client["restful-inventory-manager"]
+Base = declarative_base()
 
-    def users_collection(self):
-        """
-        Return a instance from the users collection in the database
-        """
-        users_collection = self.database["users_accounts"]
-        return users_collection
-    
-    def products_collection(self):
-        """
-        Return a instance from the product collection in the database
-        """
-        products_collection = self.database["products"]
-        return products_collection
+class Database:
+    _engine = None
+    _SessionLocal = None
 
-    def products_detail_collection(self):
-        """
-        Return a instance from the detail product collection in the database
-        """
-        products_detail_collection = self.database["detail_products"]
-        return products_detail_collection
+    @staticmethod
+    def initialize():
+        if Database._engine is None:
+            Database._engine = create_engine(Config.SUPABASE_URL)
+            Database._SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=Database._engine)
+        Base.metadata.create_all(bind=Database._engine)
 
-    def categories_collection(self):
-        """
-        Returns a instance from the categories collection in the database
-        """
-        categories_collection = self.database["categories"]
-        return categories_collection
-    
-    def tokens_collection(self):
-        tokens_blacklisted_colletions = self.database["tokens_blacklisted"]
-        return tokens_blacklisted_colletions
+    @staticmethod
+    def get_session() -> Session:
+        if Database._SessionLocal is None:
+            raise RuntimeError("Database is not initialized. Call 'Database.initialize()' first.")
+        return Database._SessionLocal()
