@@ -22,6 +22,10 @@ class ProductService:
             raise Exception("Product not found.")
         return product
     
+    def _product_already_with_one_specifically_status(self, product, data: dict):
+        if product.status == data["status"]:
+            raise Exception(f'Product already {product.status}')
+
     def get_product_by_id(self, id: int):
         product = self._product_exist(id)
         product_dump = self._product_model.model_validate(product.__dict__).model_dump(by_alias=True)
@@ -40,13 +44,13 @@ class ProductService:
 
     def update_product(self, id: int, data: dict):
         product = self._product_exist(id)
+        self._product_already_with_one_specifically_status(product, data)
         product_to_update = self._prepare_product_entity(data, product)
         return self._product_repository.update_product(product_to_update)
 
-    def delete_product(self, id: int):
+    def delete_product(self, id: int, data: dict):
         product = self._product_exist(id)
-        if product.status == 'inactive':
-            raise Exception('Product already inactive.')
-        data = {'status': 'inactive'}
+        self._product_already_with_one_specifically_status(product, data)
         product_to_delete = self._prepare_product_entity(data, product)
         return self._product_repository.update_product(product_to_delete)
+                                                       
