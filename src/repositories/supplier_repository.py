@@ -1,16 +1,7 @@
-from contextlib import contextmanager
-from database.db import Database
+from repositories.repository import Repository
 from entities.supplier_entity import SupplierEntity
 
-class SupplierRepository:
-
-    @contextmanager
-    def get_session(self):
-        session = Database.get_session()
-        try:
-            yield session
-        finally:
-            session.close()
+class SupplierRepository(Repository):
 
     def get_suppliers_by_id(self, id: int):
         with self.get_session() as session:

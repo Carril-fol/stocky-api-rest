@@ -1,17 +1,7 @@
-from contextlib import contextmanager
-
-from database.db import Database
+from repositories.repository import Repository
 from entities.product_entity import ProductEntity
 
-class ProductRepository:
-
-    @contextmanager
-    def get_session(self):
-        session = Database.get_session()
-        try:
-            yield session
-        finally:
-            session.close()
+class ProductRepository(Repository):
 
     def get_product_by_id(self, id: int):
         with self.get_session() as session:
