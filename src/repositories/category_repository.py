@@ -4,30 +4,17 @@ from entities.category_entity import CategoryEntity
 class CategoryRepository(Repository):
 
     def get_category_by_id(self, id: int):
-        with self.get_session() as session:
-            return session.query(CategoryEntity).filter(CategoryEntity.id == id).first()
+        return self.get_register_entity(CategoryEntity, id)
         
     def get_categories(self):
-        with self.get_session() as session:
-            return session.query(CategoryEntity).all()
+        return self.get_registers_entity(CategoryEntity)
 
     def create_category(self, category: CategoryEntity):
-        with self.get_session() as session:
-            session.add(category)
-            session.commit()
-            session.refresh(category)
-            return category
+        return self.create_register_entity(category)
     
     def update_category(self, category: CategoryEntity):
-        with self.get_session() as session:
-            merged_category = session.merge(category)
-            session.commit()
-            session.refresh(merged_category)
-            return merged_category
-        
+        return self.update_register_entity(category)
+
     def delete_category(self, category: CategoryEntity):
-        with self.get_session() as session:
-            merged_category = session.merge(category)
-            session.commit()
-            session.refresh(merged_category)
-            return merged_category
+        return self.delete_logic_register_entity(category)
+    
