@@ -1,20 +1,13 @@
 from models.product_model import ProductModel
 from entities.product_entity import ProductEntity
 from repositories.product_repository import ProductRepository
+from services.service import BaseService
 
-class ProductService:
+class ProductService(BaseService):
 
     def __init__(self):
         self._product_model = ProductModel()
         self._product_repository = ProductRepository()
-
-    def _prepare_product_entity(self, data: dict, product: ProductEntity = None):
-        validated_data = self._product_model.model_validate(data)
-        if product:
-            for key, value in data.items():
-                setattr(product, key, value)
-            return product
-        return validated_data
 
     def _product_exist(self, id: int):
         product = self._product_repository.get_product_by_id(id)
@@ -22,35 +15,32 @@ class ProductService:
             raise Exception("Product not found.")
         return product
     
-    def _product_already_with_one_specifically_status(self, product, data: dict):
-        if product.status == data["status"]:
+    def _validate_status_change(self, product, new_status: str):
+        if product.status == new_status:
             raise Exception(f'Product already {product.status}')
 
     def get_product_by_id(self, id: int):
         product = self._product_exist(id)
-        product_dump = self._product_model.model_validate(product.__dict__).model_dump(by_alias=True)
-        return product_dump
+        return self._validate_and_serialize(product, self._product_model)
     
     def get_products(self):
         products = self._product_repository.get_products()
         for product in products:
-            product_validated = self._product_model.model_validate(product.__dict__).model_dump(by_alias=True)
-            yield product_validated
+            yield self._validate_and_serialize(product, self._product_model)
 
     def create_product(self, data: dict):
-        product_data_validated = self._prepare_product_entity(data)
+        product_data_validated = self._prepare_to_entity(data, ProductModel)
         product_entity = ProductEntity(**product_data_validated.model_dump())
         return self._product_repository.create_product(product_entity)
 
     def update_product(self, id: int, data: dict):
         product = self._product_exist(id)
-        self._product_already_with_one_specifically_status(product, data)
-        product_to_update = self._prepare_product_entity(data, product)
+        self._validate_status_change(product, data["status"])
+        product_to_update = self._prepare_to_entity(data, ProductModel, product)
         return self._product_repository.update_product(product_to_update)
 
     def delete_product(self, id: int, data: dict):
         product = self._product_exist(id)
-        self._product_already_with_one_specifically_status(product, data)
-        product_to_delete = self._prepare_product_entity(data, product)
+        self._validate_status_change(product, data["status"])
+        product_to_delete = self._prepare_to_entity(data, ProductModel, product)
         return self._product_repository.update_product(product_to_delete)
-                                                       
