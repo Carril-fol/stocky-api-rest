@@ -1,8 +1,9 @@
+from services.service import BaseService
 from models.supplier_model import SupplierModel
 from entities.supplier_entity import SupplierEntity
 from repositories.supplier_repository import SupplierRepository
 
-class SupplierService:
+class SupplierService(BaseService):
     
     def __init__(self):
         self._supplier_repository = SupplierRepository()
