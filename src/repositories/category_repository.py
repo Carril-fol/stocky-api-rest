@@ -18,3 +18,7 @@ class CategoryRepository(Repository):
     def delete_category(self, category: CategoryEntity):
         return self.delete_logic_register_entity(category)
     
+    def get_category_by_name(self, name: str):
+        with self.get_session() as session:
+            return session.query(CategoryEntity).filter(CategoryEntity.name == name).first()
+        
