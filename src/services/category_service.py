@@ -1,62 +1,52 @@
+from services.service import BaseService
 from models.category_model import CategoryModel
 from entities.category_entity import CategoryEntity
 from repositories.category_repository import CategoryRepository
 
-class CategoryService:
+class CategoryService(BaseService):
 
     def __init__(self):
-        self.category_repository = CategoryRepository()
-        self.category_model = CategoryModel()
+        self._category_repository = CategoryRepository()
+        self._category_model = CategoryModel()
 
-    def _category_exists(self, category_model: CategoryModel):
-        categories = self.category_repository.get_categories()
-        for category in categories:
-            if category.name == category_model.name:
-                return category
-        return False
+    def _category_exists_by_id(self, id: int):
+        category = self._category_repository.get_category_by_id(id)
+        if not category:
+            raise Exception('Category not found')
+        return category
 
-    def _format_data_into_model(self, data: dict):
-        return self.category_model.model_validate(data)
-    
-    def _format_data_into_category_exist(self, data: dict, category: CategoryEntity):
-        for key, value in data.items():
-            setattr(category, key, value)
+    def _category_exists_by_name(self, name: str):
+        category = self._category_repository.get_category_by_name(name)
+        if category:
+            raise Exception('Category already exists')
+
+    def _validate_status_in_category(self, category, status: str):
+        if category.status == status:
+            raise Exception(f'Category already ha status {category.status}')
         return category
 
     def get_category_by_id(self, id: int):
-        category = self.category_repository.get_category_by_id(id)
-        if not category:
-            raise Exception("Category not found")
-        return self.category_repository.get_category_by_id(id)
+        category = self._category_exists_by_id(id)
+        return category
 
     def create_category(self, data: dict):
-        validated_data = self._format_data_into_model(data)
-        category_exists = self._category_exists(validated_data)
-        if category_exists:
-            if category_exists.status == 'inactive':
-                raise Exception('Category already exists but inactive')
-            raise Exception('Category already exists and is active')
+        self._category_exists_by_name(data['name'])
+        validated_data = self._prepare_to_entity(data, CategoryModel)
         category_to_create = CategoryEntity(**validated_data.model_dump())
-        return self.category_repository.create_category(category_to_create)
+        return self._category_repository.create_category(category_to_create)
     
     def get_all_categories(self):
-        for category in self.category_repository.get_categories():
-            validated_category = self.category_model.model_validate(category.__dict__).model_dump(by_alias=True)
+        for category in self._category_repository.get_categories():
+            validated_category = self._validate_and_serialize(category, self._category_model)
             yield validated_category
 
     def update_category(self, id: int, data: dict):
-        category = self.category_repository.get_category_by_id(id)
-        if not category:
-            raise Exception('Category not found')
-        category_updated = self._format_data_into_category_exist(data, category)
-        return self.category_repository.update_category(category_updated)
+        category = self._category_exists_by_id(id)
+        category_updated = self._prepare_to_entity(data, None, category)
+        return self._category_repository.update_category(category_updated)
     
-    def delete_category(self, id: int):
-        category = self.category_repository.get_category_by_id(id)
-        if not category:
-            raise Exception('Category not found')
-        elif category.status == 'inactive':
-            raise Exception('Category already inactive')
-        data = {"status": "inactive"}
-        category_to_delete = self._format_data_into_category_exist(data, category)
-        return self.category_repository.delete_category(category_to_delete)
+    def delete_category(self, id: int, data: dict):
+        category = self._category_exists_by_id(id)
+        self._validate_status_in_category(category, data['status'])
+        category_to_delete = self._prepare_to_entity(data, category)
+        return self._category_repository.delete_category(category_to_delete)
