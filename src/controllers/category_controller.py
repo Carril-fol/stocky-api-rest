@@ -20,7 +20,7 @@ def create_category():
 def get_category_by_id(id: int):
     try:
         category = category_service.get_category_by_id(id)
-        category_dump = category_model.model_validate(category.__dict__).model_dump()
+        category_dump = category_service._validate_and_serialize(category, category_model)
         return make_response({'category': category_dump}, 200)
     except Exception as error:
         return make_response({'msg': str(error)}, 400)
@@ -45,7 +45,8 @@ def update_category(id: int):
 @category_controller.route('/delete/<int:id>', methods=['DELETE'])
 def delete_category(id: int):
     try:
-        category_service.delete_category(id)
+        data = {"status": "inactive"}
+        category_service.delete_category(id, data)
         return make_response({'msg': 'Category deleted successfully'}, 200)
     except Exception as error:
         return make_response({'msg': str(error)}, 400)
