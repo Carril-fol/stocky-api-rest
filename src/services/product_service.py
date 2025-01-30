@@ -1,13 +1,16 @@
 from models.product_model import ProductModel
 from entities.product_entity import ProductEntity
 from repositories.product_repository import ProductRepository
-from services.service import BaseService
+
+from .service import BaseService
+from .stock_service import StockService
 
 class ProductService(BaseService):
 
     def __init__(self):
         self._product_model = ProductModel()
         self._product_repository = ProductRepository()
+        self._stock_service = StockService()
 
     def _product_exist(self, id: int):
         product = self._product_repository.get_product_by_id(id)
@@ -28,10 +31,12 @@ class ProductService(BaseService):
         for product in products:
             yield self._validate_and_serialize(product, self._product_model)
 
-    def create_product(self, data: dict):
+    def create_product_with_stock(self, data: dict):
         product_data_validated = self._prepare_to_entity(data, ProductModel)
         product_entity = ProductEntity(**product_data_validated.model_dump())
-        return self._product_repository.create_product(product_entity)
+        product_created = self._product_repository.create_product(product_entity)
+        product_created_model_dump = self._validate_and_serialize(product_created, self._product_model)
+        return self._stock_service.create_stock(data, product_created_model_dump)
 
     def update_product(self, id: int, data: dict):
         product = self._product_exist(id)
