@@ -1,9 +1,9 @@
 from datetime import datetime
-from sqlalchemy import Column, Integer, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, DateTime, ForeignKey, String
 from sqlalchemy.orm import relationship
 
 from database.db import Base
-from product_entity import ProductEntity
+from .product_entity import ProductEntity
 
 class StockEntity(Base):
     __tablename__ = 'stock'
@@ -11,4 +11,5 @@ class StockEntity(Base):
     product_id = Column(Integer, ForeignKey('products.id'), nullable=False)
     quantity = Column(Integer, nullable=False)
     date_updated = Column(DateTime, nullable=False, default=datetime.now(), onupdate=datetime.now())
+    status = Column(String, nullable=False)
     products = relationship(ProductEntity)
