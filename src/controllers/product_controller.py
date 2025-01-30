@@ -1,5 +1,4 @@
 from flask import request, make_response, Blueprint
-
 from services.product_service import ProductService
 
 product_controller = Blueprint('product_controller', __name__, url_prefix='/products/api/v1')
@@ -9,7 +8,7 @@ product_service = ProductService()
 def create_product():
     data = request.get_json()
     try:
-        product_service.create_product(data)
+        product_service.create_product_with_stock(data)
         return make_response({'msg': 'Product created successfully'}, 201)
     except Exception as error:
         return make_response({'error': str(error)}, 400)
@@ -40,7 +39,7 @@ def delete_product(id: int):
     except Exception as error:
         return make_response({'error': str(error)}, 400)
     
-@product_controller.route('/get/all', methods=['GET'])
+@product_controller.route('/', methods=['GET'])
 def detail_products():
     try:
         products = list(product_service.get_products())
