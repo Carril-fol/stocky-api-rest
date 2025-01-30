@@ -27,7 +27,7 @@ class CategoryService(BaseService):
 
     def get_category_by_id(self, id: int):
         category = self._category_exists_by_id(id)
-        return category
+        return self._validate_and_serialize(category, self._category_model)
 
     def create_category(self, data: dict):
         self._category_exists_by_name(data['name'])
