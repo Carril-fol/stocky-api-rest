@@ -20,8 +20,7 @@ def create_category():
 def get_category_by_id(id: int):
     try:
         category = category_service.get_category_by_id(id)
-        category_dump = category_service._validate_and_serialize(category, category_model)
-        return make_response({'category': category_dump}, 200)
+        return make_response({'category': category}, 200)
     except Exception as error:
         return make_response({'msg': str(error)}, 400)
 
