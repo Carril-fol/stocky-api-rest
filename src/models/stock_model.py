@@ -6,7 +6,7 @@ class StockModel(BaseModel):
     id: Optional[int] = Field(default=None, description='ID of the stock')
     product_id: int = Field(default=None, description='FK of the product')
     quantity: int = Field(default=0, description='Quantity of the product')
-    status: Optional[Literal['In stock', 'Low stock', 'Out of stock']] = Field(default='In stock', description='Status of the stock')
+    status: Optional[Literal['in stock', 'low stock', 'out of stock', 'inactive']] = Field(default='in stock', description='Status of the stock')
     date_updated: Optional[datetime] = Field(default_factory=datetime.now, description='Date of the last update from the stock')
     
     @field_validator('product_id')
