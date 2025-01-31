@@ -16,4 +16,8 @@ class StockRepository(Repository):
         return self.update_register_entity(stock)
         
     def delete_stock(self, stock: StockEntity):
-        return self.delete_register_entity(stock)
+        return self.delete_logic_register_entity(stock)
+
+    def get_stock_by_product_id(self, product_id: int):
+        with self.get_session() as session:
+            return session.query(StockEntity).filter(StockEntity.product_id == product_id).first()
