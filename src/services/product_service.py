@@ -1,6 +1,10 @@
 from models.product_model import ProductModel
 from entities.product_entity import ProductEntity
 from repositories.product_repository import ProductRepository
+from exceptions.products_exceptions import (
+    ProductNotFound,
+    ProductHasAlreadyStatus
+)
 
 from .service import BaseService
 from .stock_service import StockService
@@ -15,12 +19,12 @@ class ProductService(BaseService):
     def _product_exist(self, id: int):
         product = self._product_repository.get_product_by_id(id)
         if not product:
-            raise Exception("Product not found.")
+            raise ProductNotFound()
         return product
     
     def _validate_status_change(self, product, new_status: str):
         if product.status == new_status:
-            raise Exception(f'Product already {product.status}')
+            raise ProductHasAlreadyStatus()
 
     def get_product_by_id(self, id: int):
         product = self._product_exist(id)
@@ -47,5 +51,6 @@ class ProductService(BaseService):
     def delete_product(self, id: int, data: dict):
         product = self._product_exist(id)
         self._validate_status_change(product, data["status"])
+        self._stock_service.delete_stock_by_product_id(id)
         product_to_delete = self._prepare_to_entity(data, ProductModel, product)
         return self._product_repository.update_product(product_to_delete)
