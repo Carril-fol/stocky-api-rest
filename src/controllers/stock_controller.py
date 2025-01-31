@@ -26,8 +26,9 @@ def update_stock(id: int):
     
 @stock_controller.route('/delete/<int:id>', methods=['DELETE'])
 def delete_stock(id: int):
+    data = {'status': 'inactive'}
     try:
-        stock_service.delete_stock(id)
+        stock_service.delete_stock(id, data)
         return make_response({'msg': 'Stock deleted successfully'}, 200)
     except Exception as error:
         return make_response({'error': str(error)}, 400)
