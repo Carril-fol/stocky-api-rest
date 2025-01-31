@@ -1,7 +1,13 @@
-from services.service import BaseService
 from models.category_model import CategoryModel
 from entities.category_entity import CategoryEntity
 from repositories.category_repository import CategoryRepository
+from exceptions.categories_exceptions import (
+    CategoryNotFound,
+    CategoryAlreadyExists,
+    CategoryStatusError
+)
+
+from .service import BaseService
 
 class CategoryService(BaseService):
 
@@ -12,17 +18,17 @@ class CategoryService(BaseService):
     def _category_exists_by_id(self, id: int):
         category = self._category_repository.get_category_by_id(id)
         if not category:
-            raise Exception('Category not found')
+            raise CategoryNotFound()
         return category
 
     def _category_exists_by_name(self, name: str):
         category = self._category_repository.get_category_by_name(name)
         if category:
-            raise Exception('Category already exists')
+            raise CategoryAlreadyExists()
 
     def _validate_status_in_category(self, category, status: str):
         if category.status == status:
-            raise Exception(f'Category already ha status {category.status}')
+            raise CategoryStatusError()
         return category
 
     def get_category_by_id(self, id: int):
