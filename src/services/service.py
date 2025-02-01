@@ -10,5 +10,5 @@ class BaseService:
             return instance_entity
         return validated_data
 
-    def _validate_and_serialize(self, entity, model: BaseModel):
+    def _validate_entity_and_serialize(self, entity, model: BaseModel):
         return model.model_validate(entity.__dict__).model_dump(by_alias=True)
