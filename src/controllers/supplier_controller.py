@@ -20,15 +20,15 @@ def create_supplier():
 def detail_supplier(id: int):
     try:
         supplier = supplier_service.get_supplier_by_id(id)
-        supplier_dump = supplier_model.model_validate(supplier.__dict__).model_dump()
-        return make_response({'supplier': supplier_dump}, 200)
+        return make_response({'supplier': supplier}, 200)
     except Exception as error:
         return make_response({'error': str(error)}, 400)
     
 @supplier_controller.route('/delete/<int:id>', methods=['DELETE'])
 def delete_supplier(id: int):
+    data = {'status': 'inactive'}
     try:
-        supplier_service.delete_supplier(id)
+        supplier_service.delete_supplier(id, data)
         return make_response({'msg': 'Supplier deleted successfully'}, 200)
     except Exception as error:
         return make_response({'error': str(error)}, 400)
