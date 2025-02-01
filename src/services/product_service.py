@@ -28,18 +28,18 @@ class ProductService(BaseService):
 
     def get_product_by_id(self, id: int):
         product = self._product_exist(id)
-        return self._validate_and_serialize(product, self._product_model)
+        return self._validate_entity_and_serialize(product, self._product_model)
     
     def get_products(self):
         products = self._product_repository.get_products()
         for product in products:
-            yield self._validate_and_serialize(product, self._product_model)
+            yield self._validate_entity_and_serialize(product, self._product_model)
 
     def create_product_with_stock(self, data: dict):
         product_data_validated = self._prepare_to_entity(data, ProductModel)
         product_entity = ProductEntity(**product_data_validated.model_dump())
         product_created = self._product_repository.create_product(product_entity)
-        product_created_model_dump = self._validate_and_serialize(product_created, self._product_model)
+        product_created_model_dump = self._validate_entity_and_serialize(product_created, self._product_model)
         return self._stock_service.create_stock(data, product_created_model_dump)
 
     def update_product(self, id: int, data: dict):
