@@ -1,11 +1,8 @@
+from .service import BaseService
 from repositories.stock_repository import StockRepository
 from models.stock_model import StockModel
 from entities.stock_entity import StockEntity
-from exceptions.stock_exceptions import (
-    StockNotFound
-)
-
-from .service import BaseService
+from exceptions.stock_exceptions import StockNotFound
 
 class StockService(BaseService):
 
@@ -28,12 +25,12 @@ class StockService(BaseService):
     def get_all_stock(self):
         stock = self._stock_repository.get_stock()
         for register in stock:
-            validated_stock = self._validate_and_serialize(register, self._stock_model)
+            validated_stock = self._validate_entity_and_serialize(register, self._stock_model)
             yield validated_stock
 
     def get_stock_by_id(self, id: int):
         stock = self._stock_exist(id)
-        return self._validate_and_serialize(stock, self._stock_model)
+        return self._validate_entity_and_serialize(stock, self._stock_model)
 
     def create_stock(self, data: dict, product_created_model_dump: dict):
         data['product_id'] = product_created_model_dump.get('id')
