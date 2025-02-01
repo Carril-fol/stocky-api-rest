@@ -1,11 +1,9 @@
 from flask import request, make_response, Blueprint
 
 from services.category_service import CategoryService
-from models.category_model import CategoryModel
 
 category_controller = Blueprint('category_controller', __name__, url_prefix='/categories/api/v1')
 category_service = CategoryService()
-category_model = CategoryModel()
 
 @category_controller.route('/create', methods=['POST'])
 def create_category():
@@ -43,8 +41,8 @@ def update_category(id: int):
     
 @category_controller.route('/delete/<int:id>', methods=['DELETE'])
 def delete_category(id: int):
+    data = {"status": "inactive"}
     try:
-        data = {"status": "inactive"}
         category_service.delete_category(id, data)
         return make_response({'msg': 'Category deleted successfully'}, 200)
     except Exception as error:
