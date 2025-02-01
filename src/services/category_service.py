@@ -1,3 +1,4 @@
+from .service import BaseService
 from models.category_model import CategoryModel
 from entities.category_entity import CategoryEntity
 from repositories.category_repository import CategoryRepository
@@ -6,8 +7,6 @@ from exceptions.categories_exceptions import (
     CategoryAlreadyExists,
     CategoryStatusError
 )
-
-from .service import BaseService
 
 class CategoryService(BaseService):
 
@@ -33,7 +32,7 @@ class CategoryService(BaseService):
 
     def get_category_by_id(self, id: int):
         category = self._category_exists_by_id(id)
-        return self._validate_and_serialize(category, self._category_model)
+        return self._validate_entity_and_serialize(category, self._category_model)
 
     def create_category(self, data: dict):
         self._category_exists_by_name(data['name'])
@@ -43,7 +42,7 @@ class CategoryService(BaseService):
     
     def get_all_categories(self):
         for category in self._category_repository.get_categories():
-            validated_category = self._validate_and_serialize(category, self._category_model)
+            validated_category = self._validate_entity_and_serialize(category, self._category_model)
             yield validated_category
 
     def update_category(self, id: int, data: dict):
