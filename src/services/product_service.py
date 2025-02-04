@@ -1,3 +1,5 @@
+from .service import BaseService
+from .stock_service import StockService
 from models.product_model import ProductModel
 from entities.product_entity import ProductEntity
 from repositories.product_repository import ProductRepository
@@ -5,9 +7,6 @@ from exceptions.products_exceptions import (
     ProductNotFound,
     ProductHasAlreadyStatus
 )
-
-from .service import BaseService
-from .stock_service import StockService
 
 class ProductService(BaseService):
 
@@ -22,9 +21,11 @@ class ProductService(BaseService):
             raise ProductNotFound()
         return product
     
-    def _validate_status_change(self, product, new_status: str):
-        if product.status == new_status:
+    def _validate_status_change(self, product, data: dict):
+        status = data.get("status") 
+        if status is not None and status == product.status:
             raise ProductHasAlreadyStatus()
+        return product
 
     def get_product_by_id(self, id: int):
         product = self._product_exist(id)
@@ -44,7 +45,7 @@ class ProductService(BaseService):
 
     def update_product(self, id: int, data: dict):
         product = self._product_exist(id)
-        self._validate_status_change(product, data["status"])
+        self._validate_status_change(product, data)
         product_to_update = self._prepare_to_entity(data, ProductModel, product)
         return self._product_repository.update_product(product_to_update)
 
@@ -54,3 +55,8 @@ class ProductService(BaseService):
         self._stock_service.delete_stock_by_product_id(id)
         product_to_delete = self._prepare_to_entity(data, ProductModel, product)
         return self._product_repository.update_product(product_to_delete)
+
+    def get_product_by_category_id(self, id: int):
+        products = self._product_repository.get_products_by_category_id(id)
+        for product in products:
+            yield self._validate_entity_and_serialize(product, self._product_model)
