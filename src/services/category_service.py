@@ -1,4 +1,5 @@
 from .service import BaseService
+from .product_service import ProductService
 from models.category_model import CategoryModel
 from entities.category_entity import CategoryEntity
 from repositories.category_repository import CategoryRepository
@@ -13,6 +14,7 @@ class CategoryService(BaseService):
     def __init__(self):
         self._category_repository = CategoryRepository()
         self._category_model = CategoryModel()
+        self._product_service = ProductService()
 
     def _category_exists_by_id(self, id: int):
         category = self._category_repository.get_category_by_id(id)
@@ -29,6 +31,20 @@ class CategoryService(BaseService):
         if category.status == status:
             raise CategoryStatusError()
         return category
+
+    def _get_or_create_category_default(self):
+        category = self._category_repository.get_category_by_name('other')
+        if not category:
+            data = {'name': 'other', 'status': 'active'}
+            category = self.create_category(data)
+        return category
+    
+    def change_category_if_is_deleted(self, id: int):
+        category_default = self._get_or_create_category_default()
+        data = {'category_id': category_default.id}
+        products = list(self._product_service.get_product_by_category_id(id))
+        for product in products:
+            self._product_service.update_product(product['id'], data)
 
     def get_category_by_id(self, id: int):
         category = self._category_exists_by_id(id)
@@ -53,5 +69,6 @@ class CategoryService(BaseService):
     def delete_category(self, id: int, data: dict):
         category = self._category_exists_by_id(id)
         self._validate_status_in_category(category, data['status'])
-        category_to_delete = self._prepare_to_entity(data, category)
+        self.change_category_if_is_deleted(id)
+        category_to_delete = self._prepare_to_entity(data, self._category_model, category)
         return self._category_repository.delete_category(category_to_delete)
