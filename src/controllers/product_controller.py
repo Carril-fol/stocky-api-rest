@@ -32,8 +32,8 @@ def update_product(id: int):
     
 @product_controller.route('/delete/<int:id>', methods=['DELETE'])
 def delete_product(id: int):
+    data = {'status': 'inactive'}
     try:
-        data = {'status': 'inactive'}
         product_service.delete_product(id, data)
         return make_response({'msg': 'Product deleted successfully'}, 200)
     except Exception as error:
