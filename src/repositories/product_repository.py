@@ -17,3 +17,8 @@ class ProductRepository(Repository):
     
     def delete_logic_product(self, product: ProductEntity):
         return self.delete_logic_register_entity(product)
+    
+    def get_products_by_category_id(self, id: int):
+        with self.get_session() as session:
+            products = session.query(ProductEntity).filter(ProductEntity.category_id == id).all()
+            return products
