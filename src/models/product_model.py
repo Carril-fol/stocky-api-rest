@@ -17,12 +17,6 @@ class ProductModel(BaseModel):
             raise ValueError('name must contain alphabet characters')
         return value
 
-    @field_validator('status')
-    def status_must_be_active_or_inactive(cls, value):
-        if value not in ['active', 'inactive']:
-            raise ValueError('status must be active or inactive')
-        return value 
-
     @field_validator('category_id')
     def category_id_must_be_greater_than_0(cls, value):
         if value < 0:
