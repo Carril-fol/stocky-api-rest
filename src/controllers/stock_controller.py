@@ -10,7 +10,7 @@ def get_all_stock():
     stock = stock_service.get_all_stock()
     return make_response({'stock': list(stock)}, 200)
 
-@stock_controller.route('/<int:id>', methods=['GET'])
+@stock_controller.route('/get/<int:id>', methods=['GET'])
 def get_stock_by_id(id: int):
     stock = stock_service.get_stock_by_id(id)
     return make_response({'stock': stock}, 200)
