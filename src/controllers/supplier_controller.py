@@ -1,11 +1,8 @@
 from flask import Blueprint, make_response, request
-
-from models.supplier_model import SupplierModel
 from services.supplier_service import SupplierService
 
 supplier_controller = Blueprint('supplier_controller', __name__, url_prefix='/suppliers/api/v1')
 supplier_service = SupplierService()
-supplier_model = SupplierModel()
 
 @supplier_controller.route('/create', methods=['POST'])
 def create_supplier():
