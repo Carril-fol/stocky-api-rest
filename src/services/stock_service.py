@@ -2,7 +2,7 @@ from .service import BaseService
 from repositories.stock_repository import StockRepository
 from models.stock_model import StockModel
 from entities.stock_entity import StockEntity
-from exceptions.stock_exceptions import StockNotFound
+from exceptions.stock_exceptions import StockNotFound, StockHasAlreadyStatus
 
 class StockService(BaseService):
 
@@ -19,8 +19,12 @@ class StockService(BaseService):
     def _stock_by_product_id_exist(self, product_id: int):
         stock = self._stock_repository.get_stock_by_product_id(product_id)
         if not stock:
-            raise StockNotFound()
+            return False
         return stock
+    
+    def _validate_status_in_stock(self, stock: StockEntity, data: dict):
+        if stock.status == data["status"]:
+            raise StockHasAlreadyStatus()
 
     def get_all_stock(self):
         stock = self._stock_repository.get_stock()
@@ -40,16 +44,18 @@ class StockService(BaseService):
     
     def update_stock(self, id: int, data: dict):
         stock = self._stock_exist(id)
-        stock_to_update = self._prepare_to_entity(data, StockModel, stock)
+        stock_to_update = self._prepare_to_entity(data, self._stock_model, stock)
         return self._stock_repository.update_stock(stock_to_update)
     
     def delete_stock(self, id: int, data: dict):
         stock = self._stock_exist(id)
-        stock_to_delete = self._prepare_to_entity(data, StockModel, stock)
+        self._validate_status_in_stock(stock, data)
+        stock_to_delete = self._prepare_to_entity(data, self._stock_model, stock)
         return self._stock_repository.delete_stock(stock_to_delete)
 
     def delete_stock_by_product_id(self, product_id: int):
         data = {'status': 'inactive'}
         stock = self._stock_by_product_id_exist(product_id)
-        stock_to_delete = self._prepare_to_entity(data, StockModel, stock)
-        return self._stock_repository.delete_stock(stock_to_delete)
+        if stock:
+            stock_to_delete = self._prepare_to_entity(data, self._stock_model, stock)
+            return self._stock_repository.delete_stock(stock_to_delete)
