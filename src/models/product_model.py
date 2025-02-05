@@ -4,7 +4,7 @@ from typing import Optional
 
 class ProductModel(BaseModel):
     id: Optional[int] = Field(default=None, description='ID of the product')
-    name: Optional[str] = Field(default=None, min_length=3, max_length=50, description='Name of the product')
+    name: Optional[str] = Field(default=None, min_length=3, max_length=180, description='Name of the product')
     description: Optional[str] = Field(default=None, min_length=3, max_length=300, description='Description of the product')
     category_id: int = Field(default=None, description='Id from the category')
     status: Optional[str] = Field(default='active', description="Status of the product, defaults to 'active'")
