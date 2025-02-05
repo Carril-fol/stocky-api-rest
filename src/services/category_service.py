@@ -36,9 +36,9 @@ class CategoryService(BaseService):
         return self._category_repository.get_category_by_name('other') or self.create_category(data)
     
     def _change_category_if_is_deleted(self, id: int):
-        default_category_id = self._get_or_create_default_category().id
-        data = {'category_id': default_category_id}
-        for product in self._product_service.get_product_by_category_id(default_category_id):
+        default_category_id = self._get_or_create_default_category()
+        data = {'category_id': default_category_id.id}
+        for product in self._product_service.get_product_by_category_id(id):
             self._product_service.update_product(product['id'], data)
 
     def get_category_by_id(self, id: int):
@@ -57,7 +57,7 @@ class CategoryService(BaseService):
 
     def update_category(self, id: int, data: dict):
         category = self._find_category(id)
-        category_updated = self._prepare_to_entity(data, None, category)
+        category_updated = self._prepare_to_entity(data, self._category_model, category)
         return self._category_repository.update_category(category_updated)
     
     def delete_category(self, id: int, data: dict):
