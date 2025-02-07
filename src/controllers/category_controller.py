@@ -40,7 +40,7 @@ def get_category_by_id(id: int):
     Successful response (Code 20O - OK):
     {
         'category': {
-            'id': X,
+            'id': 'Id from the category',
             'name': 'Name from the category',
             'status': 'Status from the category'
         }
@@ -67,11 +67,11 @@ def get_all_categories():
     ```
     Successful response (Code 200 - OK):
     {
-        'category': [
+        'categories': [
             {
-                'id': X,
+                'id': 'Id from the category',
                 'name': 'Name from the category',
-                'status': 'active'
+                'status': 'Status from the category'
             },
             ...
         ]
