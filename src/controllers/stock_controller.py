@@ -55,11 +55,20 @@ def get_stock_by_id(id: int):
     ```
     Successful response (Code 200 - OK):
     {
-        'stock': {
-            'id': 'Id from the stock',
-            'product_id': 'Id from the product',
-            'quantity': 'Quantity from the product in stock',
-            'status': 'Status from the stock',
+        'data': {
+            'product': {
+                'id': 'Id from the product',
+                'name': 'Name from the product',
+                'description': 'Description from the product',
+                'status': 'Status from the product',
+                'category_id': 'Id from the category to relacionate with the product'
+            },
+            'stock: {
+                'id': 'Id from the stock',
+                'product_id': 'Id from the product',
+                'quantity': 'Quantity from the product in stock',
+                'status': 'Status from the stock',
+            }
         }
     }
     ```
@@ -140,4 +149,3 @@ def get_low_stock():
     """
     data = list(stock_service.get_stock_low())
     return make_response({'data': data}, 200)
-
