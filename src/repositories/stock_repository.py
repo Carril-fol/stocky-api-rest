@@ -28,6 +28,8 @@ class StockRepository(Repository):
 
     def get_stock_detailed_by_id(self, id: int):
         with self.get_session() as session:
-            return session.query(StockEntity, ProductEntity).join(
-                ProductEntity, StockEntity.product_id == ProductEntity.id
-            ).filter(StockEntity.id == id).first()
+            return session.query(StockEntity, ProductEntity).join(ProductEntity, StockEntity.product_id == ProductEntity.id).filter(StockEntity.id == id).first()
+        
+    def get_stock_detailed_all(self):
+        with self.get_session() as session:
+            return session.query(StockEntity, ProductEntity).join(ProductEntity, StockEntity.product_id == ProductEntity.id).all()
