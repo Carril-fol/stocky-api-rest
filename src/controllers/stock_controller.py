@@ -126,7 +126,7 @@ def delete_stock(id: int):
     except Exception as error:
         return make_response({'error': str(error)}, 400)
     
-@stock_controller.route('/low')
+@stock_controller.route('/low', methods=['GET'])
 def get_low_stock():
     """
     Example:
@@ -149,3 +149,12 @@ def get_low_stock():
     """
     data = list(stock_service.get_stock_low())
     return make_response({'data': data}, 200)
+
+@stock_controller.route('/report', methods=['GET'])
+def download_stock_report():
+    output = stock_service.report_excel_stock_with_all_products()
+
+    response = make_response(output.read())
+    response.headers["Content-Disposition"] = "attachment; filename=stock_report.xlsx"
+    response.mimetype = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    return response
