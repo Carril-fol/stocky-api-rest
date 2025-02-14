@@ -32,4 +32,10 @@ class StockRepository(Repository):
         
     def get_stock_detailed_all(self):
         with self.get_session() as session:
-            return session.query(StockEntity, ProductEntity).join(ProductEntity, StockEntity.product_id == ProductEntity.id).all()
+            query = session.query(
+                StockEntity.id, StockEntity.product_id, StockEntity.quantity, StockEntity.status, StockEntity.date_updated,
+                ProductEntity.name, ProductEntity.description, ProductEntity.category_id, ProductEntity.status, ProductEntity.date_creation, ProductEntity.date_updated
+            ).join(ProductEntity, StockEntity.product_id == ProductEntity.id)
+            results = query.all()
+            column_names = [desc["name"] for desc in query.column_descriptions]
+            return [dict(zip(column_names, row)) for row in results]
