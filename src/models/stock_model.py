@@ -20,3 +20,15 @@ class StockModel(BaseModel):
         if value < 0:
             raise ValueError('Quantity has to be higher than zero')
         return value
+
+
+class StockProductDetail(BaseModel):
+    id: int = Field(default=None, description="Id from the stock")
+    product_id: int = Field(default=None, description='Id from the product')
+    quantity: int = Field(default=None, description='Number representation of the quantiy of a product')
+    status: str = Field(default=None, description='Status from the stock')
+    name: str = Field(default=None)
+    description: str = Field(default=None)
+    category_id: int = Field(default=None)
+    date_updated: datetime = Field(default=None)
+    date_creation: datetime = Field(default=None)
