@@ -28,6 +28,7 @@ and stock control, ensuring an organized and accessible inventory system.
 ### 📊 Stock Management
 * Add, update, and remove products from inventory.
 * Track stock levels and availability.
+* Generate Excel reports of current stock levels.
 
 ## Tech used 
 
@@ -65,10 +66,13 @@ docker pull carrilfol/restful-inventory-manager
 docker run -p [PORT TO EXPOSE]:5000 carrilfol/restful-inventory-manager
 ```
 
-<!-- Agregar link de render-->
 ## Deploy in render
 You can access the live version of the application here and make requests from Postman or Insomnia.
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)]()
 
 >Note: The server may take time to start because it is hosted on the free layer.
+
+<p align="center">
+  Developed with ❤️ by <a href="https://github.com/Carril-fol" target="_blank">Folco Carril</a>
+</p>
