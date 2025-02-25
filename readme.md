@@ -11,11 +11,6 @@ and stock control, ensuring an organized and accessible inventory system.
     - [Using manual download ZIP](#using-manual-download-zip)
     - [Using docker](#using-docker)
 - [Deploy in render](#deploy-in-render)
-- [API endpoints](#api-endpoints)
-    - [*Indication*](#indication)
-  - [User related](#user-related)
-  - [Folders related](#folders-related)
-  - [Tasks related](#tasks-related)
 
 ## Features
 
