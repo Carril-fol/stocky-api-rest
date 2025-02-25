@@ -63,13 +63,13 @@ docker pull carrilfol/restful-inventory-manager
 ```
 3. Now you need to run the image you just downloaded in docker, with the following command
 ```bash
-docker run -p [PORT TO EXPOSE]:5000 carrilfol/restful-inventory-manager
+docker run -p [PORT TO EXPOSE]:8000 carrilfol/restful-inventory-manager
 ```
 
 ## Deploy in render
 You can access the live version of the application here and make requests from Postman or Insomnia.
 
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)]()
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://restful-inventory-manager.onrender.com)
 
 >Note: The server may take time to start because it is hosted on the free layer.
 
