@@ -11,6 +11,10 @@ class Repository:
         finally:
             session.close()
 
+    def check_database(self):
+        with self.get_session() as session:
+            return session.execute("SELECT 1")
+
     def create_register_entity(self, entity):
         with self.get_session() as session:
             session.add(entity)
