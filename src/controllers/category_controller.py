@@ -1,9 +1,15 @@
 from flask import request, make_response, Blueprint
 
+from repositories.category_repository import CategoryRepository
+from repositories.product_repository import ProductRepository
+
 from services.category_service import CategoryService
 
 category_controller = Blueprint('category_controller', __name__, url_prefix='/categories/api/v1')
-category_service = CategoryService()
+
+product_repository = ProductRepository()
+category_repository = CategoryRepository()
+category_service = CategoryService(category_repository, product_repository)
 
 @category_controller.route('/create', methods=['POST'])
 def create_category():
@@ -79,7 +85,7 @@ def get_all_categories():
     ```
     """
     try:
-        categories = list(category_service.get_all_categories())
+        categories = category_service.get_all_categories()
         return make_response({'categories': categories}, 200)
     except Exception as error:
         return make_response({'msg': str(error)}, 400)
@@ -123,7 +129,7 @@ def delete_category(id: int):
     }
     ```
     """
-    data = {"status": "inactive"}
+    data = {"status": "INACTIVE"}
     try:
         category_service.delete_category(id, data)
         return make_response({'msg': 'Category deleted successfully'}, 200)
