@@ -10,5 +10,10 @@ class BaseService:
             return instance_entity
         return validated_data
 
+    def _update_instance_entity(self, data: dict, entity):
+        for key, value in data.items():
+            setattr(entity, key, value)
+        return entity
+
     def _validate_entity_and_serialize(self, entity, model: BaseModel):
         return model.model_validate(entity.__dict__).model_dump(by_alias=True)
