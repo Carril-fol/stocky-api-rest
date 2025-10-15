@@ -5,7 +5,6 @@ load_dotenv()
 class Config:
     SECRET_KEY = os.getenv("SECRET_KEY")
     SUPABASE_URL = os.getenv("SUPABASE_URL")
-    SUPABASE_KEY = os.getenv("SUPABASE_KEY")
     SERVER_HOST = os.getenv("SERVER_HOST")
     SERVER_PORT = int(os.getenv("SERVER_PORT", 8000))
     JWT_TOKEN_LOCATION = ["cookies"]
