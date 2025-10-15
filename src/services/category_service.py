@@ -1,5 +1,4 @@
 from .service import BaseService
-from .product_service import ProductService
 
 from models.category_model import CategoryModel, CreateOrUpdateCategoryModel
 from entities.category_entity import CategoryEntity
