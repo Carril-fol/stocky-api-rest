@@ -1,8 +1,10 @@
 from flask import Blueprint, make_response, request
+from repositories.supplier_repository import SupplierRepository
 from services.supplier_service import SupplierService
 
 supplier_controller = Blueprint('supplier_controller', __name__, url_prefix='/suppliers/api/v1')
-supplier_service = SupplierService()
+supplier_repository = SupplierRepository()
+supplier_service = SupplierService(supplier_repository)
 
 @supplier_controller.route('/create', methods=['POST'])
 def create_supplier():
@@ -80,7 +82,7 @@ def delete_supplier(id: int):
     }
     ```
     """
-    data = {'status': 'inactive'}
+    data = {'status': 'INACTIVE'}
     try:
         supplier_service.delete_supplier(id, data)
         return make_response({'msg': 'Supplier deleted successfully'}, 200)
