@@ -59,7 +59,7 @@ class CategoryService(BaseService):
 
     def update_category(self, id: int, data: dict) -> CategoryEntity:
         category = self._find_category(id)
-        category_validated = CreateOrUpdateCategoryModel.model_validate(category.to_dict()).model_dump(by_alias=True)
+        category_validated = CreateOrUpdateCategoryModel.model_validate(data).model_dump(by_alias=True, exclude_unset=True)
 
         category_updated = self._update_instance_entity(category_validated, category)
         return self._category_repository.update_category(category_updated)
