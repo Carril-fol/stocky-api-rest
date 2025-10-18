@@ -1,4 +1,5 @@
 from .service import BaseService
+
 from models.supplier_model import SupplierModel, CreateUpdateSupplierModel
 from entities.supplier_entity import SupplierEntity
 from repositories.supplier_repository import SupplierRepository
@@ -8,8 +9,17 @@ class SupplierService(BaseService):
     
     def __init__(self, supplier_repository: SupplierRepository):
         self._supplier_repository = supplier_repository
-    
-    def _supplier_exists_by_name(self, supplier_model: SupplierModel) -> SupplierAlreadyExists | SupplierEntity:
+
+    def create_default_supplier(self):
+        data = { "name": "SIN PROVEEDOR", "status": "ACTIVE" }
+        supplier_model_data = CreateUpdateSupplierModel.model_validate(data)
+
+        if not self._supplier_repository.get_supplier_by_name(supplier_model_data.name):
+            supplier_model_dump = supplier_model_data.model_dump()
+            supplier_to_create = SupplierEntity(**supplier_model_dump)
+            self._supplier_repository.create_supplier(supplier_to_create)
+
+    def _supplier_exists_by_name(self, supplier_model) -> SupplierAlreadyExists | SupplierEntity:
         supplier = self._supplier_repository.get_supplier_by_name(supplier_model.name)
         if supplier:
             raise SupplierAlreadyExists()
@@ -26,7 +36,7 @@ class SupplierService(BaseService):
             raise SupplierHasAlreadyStatus()
         return supplier
 
-    def create_supplier(self, data: dict) -> SupplierEntity:
+    def create_supplier(self, data: dict) -> SupplierEntity:        
         supplier_data_validated = CreateUpdateSupplierModel.model_validate(data)
         self._supplier_exists_by_name(supplier_data_validated)
 
