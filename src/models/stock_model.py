@@ -2,13 +2,20 @@ from datetime import datetime
 from typing import Optional, Literal
 from pydantic import BaseModel, Field, field_validator
 
-class StockModel(BaseModel):
-    id: Optional[int] = Field(default=None, description='ID of the stock')
-    product_id: int = Field(default=None, description='FK of the product')
-    quantity: int = Field(default=0, description='Quantity of the product')
-    status: Optional[Literal['in stock', 'low stock', 'out of stock', 'inactive']] = Field(default='in stock', description='Status of the stock')
+status_type = Literal['IN STOCK', 'LOW STOCK', 'OUT OF STOCK', 'INACTIVE']
+
+class BaseStockModel(BaseModel):
+    product_id: Optional[int] = Field(default=None, description='FK of the product')
+    quantity: Optional[int] = Field(default=0, description='Quantity of the product')
+    status: Optional[status_type] = Field(default='IN STOCK', description='Status of the stock')
     date_updated: Optional[datetime] = Field(default_factory=datetime.now, description='Date of the last update from the stock')
     
+    @field_validator("*", mode="before")
+    def convert_to_uppercase(cls, value):
+        if isinstance(value, str):
+            return value.upper()
+        return value
+
     @field_validator('product_id')
     def validate_product_id(cls, value):
         if value is None:
@@ -20,6 +27,19 @@ class StockModel(BaseModel):
         if value < 0:
             raise ValueError('Quantity has to be higher than zero')
         return value
+
+
+class CreateStockModel(BaseStockModel):
+    product_id: int
+    quantity: int
+
+
+class UpdateStockModel(BaseStockModel):
+    pass
+
+
+class StockDetail(BaseStockModel):
+    id: int
 
 
 class StockProductDetail(BaseModel):
