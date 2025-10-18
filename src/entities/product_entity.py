@@ -18,3 +18,6 @@ class ProductEntity(Base):
     date_updated = Column(DateTime, nullable=False, default=datetime.now(), onupdate=datetime.now())
     category = relationship(CategoryEntity)
     supplier = relationship(SupplierEntity)
+
+    def to_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
