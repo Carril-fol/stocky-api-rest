@@ -1,9 +1,11 @@
 from .service import BaseService
 
-from models.category_model import CategoryModel, CreateOrUpdateCategoryModel
 from entities.category_entity import CategoryEntity
+from models.category_model import CategoryModel, CreateOrUpdateCategoryModel
+
 from repositories.category_repository import CategoryRepository
 from repositories.product_repository import ProductRepository
+
 from exceptions.categories_exceptions import CategoryNotFound, CategoryAlreadyExists, CategoryStatusError
 
 
@@ -27,12 +29,18 @@ class CategoryService(BaseService):
         if category.status == data["status"]:
             raise CategoryStatusError()
 
-    def _get_or_create_default_category(self) -> CategoryEntity:
-        data = {'name': 'other', 'status': 'active'}
-        return self._category_repository.get_category_by_name('other') or self.create_category(data)
+    def create_default_category(self) -> CategoryEntity:
+        data = {'name': 'OTHER', 'status': 'ACTIVE'}
+        category_model = CreateOrUpdateCategoryModel.model_validate(data)
+        category_exist = self._category_repository.get_category_by_name(category_model.name)
+
+        if not category_exist:
+            category_model_dump = category_model.model_dump()
+            category_entity = CategoryEntity(**category_model_dump)
+            self._category_repository.create_category(category_entity)
     
     def _change_category_if_is_deleted(self, id: int):
-        default_category_id = self._get_or_create_default_category()
+        default_category_id = self._category_repository.get_category_by_name("OTHER")
         data = {'category_id': default_category_id.id}
         
         for product in self._product_repository.get_products_by_category_id(id):
@@ -45,29 +53,30 @@ class CategoryService(BaseService):
 
     def create_category(self, data: dict) -> CategoryEntity:
         self._validate_unique_name(data)
-        validated_data = CreateOrUpdateCategoryModel.model_validate(data)
+        category_model_dump = CreateOrUpdateCategoryModel.model_validate(data).model_dump()
 
-        category_to_create = CategoryEntity(**validated_data.model_dump())
-        return self._category_repository.create_category(category_to_create)
+        category_entity = CategoryEntity(**category_model_dump)
+        return self._category_repository.create_category(category_entity)
     
     def get_all_categories(self) -> list[dict]:
         categories = []
         for category in self._category_repository.get_categories():
-            category_dumped = CategoryModel.model_validate(category.to_dict()).model_dump(by_alias=True)
+            category_dumped = CategoryModel.model_validate(category.to_dict()).model_dump()
             categories.append(category_dumped)
         return categories
 
     def update_category(self, id: int, data: dict) -> CategoryEntity:
         category = self._find_category(id)
-        category_validated = CreateOrUpdateCategoryModel.model_validate(data).model_dump(by_alias=True, exclude_unset=True)
+        category_model_dump = CreateOrUpdateCategoryModel.model_validate(data).model_dump(exclude_unset=True)
 
-        category_updated = self._update_instance_entity(category_validated, category)
-        return self._category_repository.update_category(category_updated)
+        category_entity = self._update_instance_entity(category_model_dump, category)
+        return self._category_repository.update_category(category_entity)
     
     def delete_category(self, id: int, data: dict) -> CategoryEntity:
-        category = self._find_category(id)
-        self._validate_status_in_category(category, data)
+        category_instance = self._find_category(id)
+
+        self._validate_status_in_category(category_instance, data)
         self._change_category_if_is_deleted(id)
 
-        category_to_delete = self._update_instance_entity(data, category)
-        return self._category_repository.delete_category(category_to_delete)
+        category_entity = self._update_instance_entity(data, category_instance)
+        return self._category_repository.delete_category(category_entity)
