@@ -1,8 +1,14 @@
 from flask import Blueprint, request, make_response
+
+from repositories.stock_repository import StockRepository
+from repositories.product_repository import ProductRepository
 from services.stock_service import StockService
 
 stock_controller = Blueprint('stock_controller', __name__, url_prefix='/stock/api/v1')
-stock_service = StockService()
+product_repository = ProductRepository()
+stock_repository = StockRepository()
+stock_service = StockService(stock_repository, product_repository)
+
 
 @stock_controller.route('/', methods=['GET'])
 def get_all_stock():
@@ -149,12 +155,3 @@ def get_low_stock():
     """
     data = list(stock_service.get_stock_low())
     return make_response({'data': data}, 200)
-
-@stock_controller.route('/report', methods=['GET'])
-def download_stock_report():
-    output = stock_service.report_excel_stock_with_all_products()
-
-    response = make_response(output.read())
-    response.headers["Content-Disposition"] = "attachment; filename=stock_report.xlsx"
-    response.mimetype = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    return response
