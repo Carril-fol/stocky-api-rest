@@ -2,6 +2,7 @@ from repositories.repository import Repository
 from entities.stock_entity import StockEntity
 from entities.product_entity import ProductEntity
 
+
 class StockRepository(Repository):
             
     def create_stock(self, stock: StockEntity):
@@ -26,10 +27,9 @@ class StockRepository(Repository):
             query = session.query(StockEntity, ProductEntity).join(ProductEntity, StockEntity.product_id == ProductEntity.id)
             return query.limit(per_page).offset((page - 1) * per_page).all()
 
-    def get_stock_detailed_by_id(self, id: int):
-        with self.get_session() as session:
-            return session.query(StockEntity, ProductEntity).join(ProductEntity, StockEntity.product_id == ProductEntity.id).filter(StockEntity.id == id).first()
-        
+    def get_stock_by_id(self, id: int):
+        return self.get_register_entity(StockEntity, id)
+
     def get_stock_detailed_all(self):
         with self.get_session() as session:
             query = session.query(
