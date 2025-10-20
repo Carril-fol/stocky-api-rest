@@ -13,3 +13,6 @@ class StockEntity(Base):
     date_updated = Column(DateTime, nullable=False, default=datetime.now(), onupdate=datetime.now())
     status = Column(String, nullable=False)
     products = relationship(ProductEntity)
+
+    def to_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
