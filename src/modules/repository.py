@@ -9,9 +9,6 @@ class Repository:
             yield session
 
     def create_register_entity(self, entity, session=None):
-        # Si recibimos una sesión externa, formamos parte de una transacción
-        # más grande: solo hacemos flush (para obtener el PK) y dejamos que el
-        # caller decida el commit/rollback. Sin sesión, se comporta como antes.
         if session is not None:
             session.add(entity)
             session.flush()

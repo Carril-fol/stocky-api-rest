@@ -5,7 +5,8 @@ from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from werkzeug.middleware.proxy_fix import ProxyFix
-from spectree import SpecTree, SecurityScheme
+from spectree import SpecTree
+from spectree.models import SecurityScheme
 
 # Loading environment variables
 load_dotenv()
@@ -42,9 +43,6 @@ limiter = Limiter(
 )
 
 # Spectree
-from spectree import SpecTree
-from spectree.models import SecurityScheme
-
 spectree = SpecTree(
     'flask',
     title='Inventra API',
