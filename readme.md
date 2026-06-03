@@ -1,6 +1,13 @@
-# Stocky API REST
+# Stock Management API
 
 A multi-tenant REST API for stock and inventory management. Each company manages its own products, categories, suppliers, stock, and users through a role-based access control system.
+
+## Why this project
+
+Built as a portfolio project to practice designing a production-grade 
+multi-tenant REST API from scratch. The goal was to implement patterns 
+I'd use in a real backend: RBAC, tenant isolation, JWT with cookies, 
+database migrations, and automated API docs — all in a single cohesive system.
 
 ## Tech Stack
 
