@@ -1,3 +1,5 @@
+import os
+
 from dotenv import load_dotenv
 from flask import Flask
 from flask_jwt_extended import JWTManager
@@ -7,9 +9,12 @@ from flask_limiter.util import get_remote_address
 from werkzeug.middleware.proxy_fix import ProxyFix
 from spectree import SpecTree
 from spectree.models import SecurityScheme
+from flask_talisman import Talisman
 
 # Loading environment variables
 load_dotenv()
+
+_is_dev = os.getenv("FLASK_ENV") == "development"
 
 # Flask
 # https://flask.palletsprojects.com/en/stable/
@@ -58,4 +63,16 @@ spectree = SpecTree(
         ),
     ],
     security={"AccessToken": []}
+)
+
+# Flask-Talisman
+talisman = Talisman(
+    app,
+    force_https=not _is_dev,
+    strict_transport_security=not _is_dev,
+    strict_transport_security_max_age=31536000,
+    strict_transport_security_include_subdomains=True,
+    x_content_type_options=True,
+    frame_options="SAMEORIGIN",
+    content_security_policy=False,
 )
