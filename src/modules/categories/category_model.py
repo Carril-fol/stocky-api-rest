@@ -44,6 +44,12 @@ class CreateCategoryModel(BaseModel):
     status: Optional[str] = Field(default='ACTIVE', description="Status of the category, defaults to 'active'")
     company_id: int
 
+    @field_validator('name', mode='before')
+    def uppercase_name(cls, value):
+        if isinstance(value, str):
+            return value.upper()
+        return value
+
 
 # --------------------------------------------------------
 # Update Category Model
@@ -62,6 +68,12 @@ class UpdateCategoryModel(BaseModel):
     name: str = Field(default=None, min_length=3, max_length=150, description='Name of the category')
     status: Optional[str] = Field(default='ACTIVE', description="Status of the category, defaults to 'active'")
     company_id: int
+
+    @field_validator('name', mode='before')
+    def uppercase_name(cls, value):
+        if isinstance(value, str):
+            return value.upper()
+        return value
 
 # --------------------------------------------------------
 # Delete Category Model
@@ -88,6 +100,7 @@ class ListDetailCategoryModel(BaseModel):
     total: int = Field(..., description='Total number of categories')
     page: int = Field(..., description='Current page number')
     per_page: int = Field(..., description='Number of categories per page')
+    total_pages: int = Field(..., description='Total number of pages')
 
 
 # --------------------------------------------------------
