@@ -2,6 +2,7 @@ from core.asgi import start_server
 from core.extensions import app, spectree
 from core.settings import settings_from_server, type_server
 from core.health import health_blueprint
+from core.error_handlers import register_error_handlers
 
 from modules.products.product_controller import product_controller
 from modules.categories.category_controller import category_controller
@@ -14,6 +15,9 @@ from modules.role_permissions.role_permission_controller import role_permission_
 
 #Spectree
 spectree.register(app)
+
+# Global error handlers
+register_error_handlers(app)
 
 # Flask
 # https://flask.palletsprojects.com/en/3.0.x/
