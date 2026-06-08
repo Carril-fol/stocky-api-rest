@@ -62,6 +62,7 @@ class ListDetailProductModel(BaseModel):
     total: int = Field(..., description="Total number of products")
     page: int = Field(..., description="Current page number")
     per_page: int = Field(..., description="Number of products per page")
+    total_pages: int = Field(..., description="Total number of pages")
 
 
 # --------------------------------------------------------
