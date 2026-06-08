@@ -19,6 +19,10 @@ from .supplier_model import (
     ErrorOutput
 )
 
+from core.logger import get_logger
+
+logger = get_logger(__name__)
+
 supplier_controller = Blueprint('supplier_controller', __name__, url_prefix='/suppliers/api/v1')
 supplier_repository = SupplierRepository()
 supplier_service = SupplierService(supplier_repository)
@@ -67,6 +71,7 @@ def create_supplier(json: CreateSupplierInput):
     company_id: int = user_data.get("user_role")["company_id"]
 
     supplier_service.create_supplier(data, company_id)
+    logger.info("Supplier created: company_id=%s", company_id)
     return make_response({'msg': 'Supplier created successfully'}, 201)
 
 
@@ -84,6 +89,7 @@ def create_supplier(json: CreateSupplierInput):
 )
 def get_supplier_by_id(id: int):
     supplier = supplier_service.get_supplier_by_id(id)
+    logger.info("Supplier retrieved: id=%s", id)
     return make_response({'supplier': supplier}, 200)
 
 
@@ -98,6 +104,7 @@ def get_supplier_by_id(id: int):
 def delete_supplier(id: int):
     data = {'status': 'INACTIVE'}
     supplier_service.delete_supplier(id, data)
+    logger.info("Supplier deleted: id=%s", id)
     return make_response({'msg': 'Supplier deleted successfully'}, 200)
 
 
@@ -113,6 +120,7 @@ def get_suppliers():
     company_id: int = user_data.get("user_role")["company_id"]
 
     suppliers = supplier_service.get_suppliers(company_id)
+    logger.info("Suppliers retrieved: company_id=%s", company_id)
     return make_response({'suppliers': suppliers}, 200)
 
 
@@ -136,4 +144,5 @@ def update_supplier(json: UpdateSupplierInput, id: int):
     company_id: int = user_data.get("user_role")["company_id"]
 
     supplier_service.update_supplier(id, data, company_id)
+    logger.info("Supplier updated: id=%s", id)
     return make_response({'msg': 'Supplier updated successfully'}, 200)

@@ -1,7 +1,9 @@
+import math
 from flask import request, make_response, Blueprint
 from flask_jwt_extended import jwt_required
 from spectree import Response
 
+from core.logger import get_logger
 from core.extensions import spectree
 from .product_service import ProductService
 from .product_repository import ProductRepository
@@ -21,6 +23,8 @@ from .product_middleware import require_user_from_same_company
 from ..role_permissions.role_permission_middleware import require_permission
 from .products_exceptions import ProductNotFound, ProductHasAlreadyStatus
 from ..users_companies.auth_helpers import get_current_user_company
+
+logger = get_logger(__name__)
 
 stock_repository = StockRepository()
 product_repository = ProductRepository()
@@ -71,6 +75,7 @@ def create_product(json: CreateProductInputModel):
     company_id = user_company.company_id
 
     product_service.create_product(data, company_id)
+    logger.info("Product created: name=%s company_id=%s", data.get("name"), company_id)
     return make_response({"msg": "Product created successfully"}, 201)
 
 
@@ -90,6 +95,7 @@ def detail_product(id: int):
         return make_response({"error": "ID not provided"}, 400)
 
     product = product_service.get_product_by_id(id)
+    logger.info("Product retrieved: id=%s", id)
     return make_response({"product": product}, 200)
 
 
@@ -111,10 +117,12 @@ def update_product(json: UpdateProductInputModel, id: int):
 
     data = json.model_dump(exclude_unset=True)
     product_service.update_product(id, data)
+
+    logger.info("Product updated: id=%s fields=%s", id, list(data.keys()))
     return make_response({"msg": "Product updated successfully"}, 200)
 
 
-@product_controller.route("/disable/<int:id>", methods=["DELETE"])
+@product_controller.route("/deactivate/<int:id>", methods=["PATCH"])
 @jwt_required()
 @require_user_from_same_company()
 @require_permission("delete_product")
@@ -131,6 +139,8 @@ def deactivate_product(id: int):
 
     data = {"status": "INACTIVE"}
     product_service.deactivate_product(id, data)
+
+    logger.info("Product deactivated: id=%s", id)
     return make_response({"msg": "Product deactivated successfully"}, 200)
 
 
@@ -147,17 +157,20 @@ def get_all_products():
     user_company = get_current_user_company()
     company_id = user_company.company_id
 
-    page = max(int(request.args.get('page', 1)), 1)
-    per_page = min(max(int(request.args.get('per_page', 10)), 1), 100)
+    page = max(request.args.get('page', 1, type=int), 1)
+    per_page = min(max(request.args.get('per_page', 10, type=int), 1), 100)
     search = request.args.get('search')
 
     products, total = product_service.get_products(company_id, page, per_page, search)
 
+
+    logger.info("Products retrieved: company_id=%s page=%s per_page=%s search=%s", company_id, page, per_page, search)
     return make_response({
         "products": products,
         "total": total,
         "page": page,
-        "per_page": per_page
+        "per_page": per_page,
+        "total_pages": math.ceil(total / per_page) if total else 0
     }, 200)
 
 
@@ -175,4 +188,6 @@ def get_product_by_name(name: str):
     company_id = user_company.company_id
 
     product = product_service.get_product_by_name(name, company_id)
+
+    logger.info("Product retrieved by name: name=%s company_id=%s", name, company_id)
     return make_response({'product': product}, 200)

@@ -19,6 +19,9 @@ from .stock_model import (
 from ..products.product_repository import ProductRepository
 from ..role_permissions.role_permission_middleware import require_permission
 from ..users_companies.auth_helpers import get_current_user_company
+from core.logger import get_logger
+
+logger = get_logger(__name__)
 
 product_repository = ProductRepository()
 stock_repository = StockRepository()
@@ -68,6 +71,7 @@ def get_all_stock():
     per_page: int = min(max(request.args.get('per_page', 10, type=int), 1), 100)
 
     stock_data, total = stock_service.get_stock_detailed_with_product(page, per_page, company_id)
+    logger.info("Stock retrieved: company_id=%s page=%s per_page=%s", company_id, page, per_page)
     return make_response({
         "data": stock_data,
         "total": total,
@@ -91,6 +95,7 @@ def get_all_stock():
 )
 def get_stock_by_id(id: int):
     stock = stock_service.get_stock_by_id(id)
+    logger.info("Stock retrieved: id=%s", id)
     return make_response({'data': stock}, 200)
 
 
@@ -112,6 +117,7 @@ def update_stock(id: int, json: UpdateStockInput):
     data = json.model_dump(exclude_unset=True)
 
     stock_service.update_stock(id, data)
+    logger.info("Stock updated: id=%s fields=%s", id, list(data.keys()))
     return make_response({'msg': 'Stock updated successfully'}, 200)
 
 
@@ -135,6 +141,7 @@ def get_low_stock():
     per_page: int = min(max(request.args.get('per_page', 10, type=int), 1), 100)
 
     data, total = stock_service.get_stock_low(page, per_page, company_id)
+    logger.info("Low stock retrieved: company_id=%s page=%s per_page=%s", company_id, page, per_page)
     return make_response({
         'data': data,
         'total': total,

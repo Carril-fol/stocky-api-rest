@@ -2,6 +2,7 @@ from flask import request, Blueprint, make_response
 from flask_jwt_extended import jwt_required
 from spectree import Response
 
+from core.logger import get_logger
 from core.extensions import spectree
 from .company_orchestrator import company_service
 from .company_model import (
@@ -12,6 +13,8 @@ from .company_model import (
 )
 
 from ..users_companies.auth_helpers import get_current_user_company
+
+logger = get_logger(__name__)
 
 company_controller = Blueprint(
     'company_controller',
@@ -38,6 +41,7 @@ def update_company(json: UpdateCompanyInput, company_id: int):
     requesting_role_id = user_data.role_id
 
     company_service.update_company(company_id, data, requesting_role_id)
+    logger.info("Company updated: company_id=%s", company_id)
     return make_response({"msg": "Company updated successfully"}, 200)
 
 
@@ -54,4 +58,5 @@ def detail_company(company_id: int):
     requesting_role_id = user_data.role_id
 
     company_detail = company_service.detail_company(company_id, requesting_role_id)
+    logger.info("Company detail retrieved: company_id=%s", company_id)
     return make_response(company_detail, 200)
