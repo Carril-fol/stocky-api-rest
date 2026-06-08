@@ -26,12 +26,15 @@ from .user_model import (
 from ..users_companies.auth_helpers import get_current_user_company
 from ..permissions.permissions_exceptions import InsufficientRolePrivileges
 from ..role_permissions.role_permission_middleware import require_permission
+from core.logger import get_logger
 
 users_blueprint = Blueprint(
-    "users", 
-    __name__, 
+    "users",
+    __name__,
     url_prefix="/users/api/v1"
 )
+
+logger = get_logger(__name__)
 
 # --------------------------------------------------------
 # Error handlers
@@ -77,6 +80,7 @@ def register(json: RegisterWithCompanyInput):
 
     response = make_response({"msg": "Register successful", "access_token": access_token}, 201)
     set_access_cookies(response, access_token)
+    logger.info("User registered")
     return response
 
 
@@ -102,6 +106,7 @@ def login(json: LoginInput):
     response = make_response({"msg": "Login successful", "access_token": access_token}, 200)
     set_access_cookies(response, access_token)
     set_refresh_cookies(response, refresh_token)
+    logger.info("User logged in: user_id=%s", user_id)
     return response
 
 
@@ -112,6 +117,7 @@ def logout():
     response = make_response({"msg": "Logout succesfully"}, 200)
     unset_access_cookies(response)
     unset_jwt_cookies(response)
+    logger.info("User logged out")
     return response
 
 
@@ -124,12 +130,13 @@ def refresh_token():
     new_refresh_token = create_refresh_token(identity=current_user)
 
     response = make_response({"msg": "Token refreshed", "tokens": {
-        "access_token": new_access_token, 
+        "access_token": new_access_token,
         "refresh_token": new_refresh_token
         }
     }, 200)
     set_access_cookies(response, new_access_token)
     set_refresh_cookies(response, new_refresh_token)
+    logger.info("Token refreshed: user=%s", current_user)
     return response
 
 
@@ -140,4 +147,5 @@ def me():
     user_id: int = get_current_user_company().user_id
     
     user_instance = user_service.get_user_by_id(user_id)
+    logger.info("User profile retrieved: user_id=%s", user_id)
     return make_response({"user": user_instance}, 200)
