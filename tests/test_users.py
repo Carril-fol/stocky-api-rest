@@ -1,6 +1,5 @@
 import pytest
 
-
 from modules.users.user_orchestrator import user_service
 from modules.users.user_repository import UserRepository
 from modules.users.user_exceptions import UserWithAnEmailAlreadyExists, UserNotFound
@@ -25,7 +24,7 @@ role_repo = RoleRepository()
 permissions_repo = PermissionRepository()
 
 # --------------------------------------------------------
-# Helpers
+# Data
 # --------------------------------------------------------
 
 USER_DATA = {
@@ -41,6 +40,10 @@ COMPANY_DATA = {
     "country": "Argentina",
     "address": "123 Main St",
 }
+
+# --------------------------------------------------------
+# Helpers
+# --------------------------------------------------------
 
 def _register_owner(user_data: dict, company_data: dict):
     user_id = user_service.register_owner(user_data, company_data)
