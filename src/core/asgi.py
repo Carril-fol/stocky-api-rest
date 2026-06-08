@@ -14,7 +14,7 @@ from seeds.permissions_seeder import seed_permissions
 
 def start_server(app):
     db = Database()
-    db.initialize(create_tables=True)
+    db.initialize()
 
     seed_permissions()
     app.run(host="0.0.0.0", port=8000, debug=True)
