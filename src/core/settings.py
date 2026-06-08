@@ -17,7 +17,7 @@ class Config:
 class DevelopmentConfig(Config):
     DEBUG = True
     JWT_COOKIE_CSRF_PROTECT = False
-    JWT_COOKIE_HTTPONLY = False
+    JWT_COOKIE_HTTPONLY = True
     JWT_CSRF_IN_COOKIES = False
     JWT_COOKIE_SECURE = True
     JWT_COOKIE_SAMESITE = "None"
