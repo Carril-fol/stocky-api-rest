@@ -2,7 +2,7 @@ from spectree import Response
 from flask import Blueprint, make_response
 from flask_jwt_extended import jwt_required
 
-from core.extensions import spectree
+from core.extensions import spectree, limiter
 from .auth_helpers import get_current_user_company
 from .users_companies_model import RegisterInputFromCompany
 
@@ -19,12 +19,15 @@ from ..users.user_model import (
 
 from ..permissions.permissions_exceptions import InsufficientRolePrivileges
 from ..role_permissions.role_permission_middleware import require_permission
+from core.logger import get_logger
 
 users_companies_blueprint = Blueprint(
-    "users_companies", 
-    __name__, 
+    "users_companies",
+    __name__,
     url_prefix="/users/api/v1"
 )
+
+logger = get_logger(__name__)
 
 
 # --------------------------------------------------------
@@ -70,10 +73,12 @@ def create_user_for_company(json: RegisterInputFromCompany):
     company_id: int = get_current_user_company().company_id
 
     user_service.create_user_for_company(data, company_id)
+    logger.info("User created for company: company_id=%s", company_id)
     return make_response({"msg": "User created successfully"}, 201)
 
 
 @users_companies_blueprint.route("/update-user-from-company/<int:id>", methods=["PUT", "PATCH"])
+@limiter.limit("3 per minute")
 @jwt_required()
 @require_user_from_same_company()
 @require_permission("update_user")
@@ -92,10 +97,12 @@ def update_user_from_company(json: UpdateUserInput, id: int):
     requesting_user_id: int = get_current_user_company().user_id
 
     user_service.update_user_from_company(id, data, requesting_user_id)
+    logger.info("User updated: id=%s fields=%s", id, list(data.keys()))
     return make_response({"msg": "User updated successfully"}, 200)
 
 
 @users_companies_blueprint.route("/delete-user-from-company/<int:id>", methods=["DELETE"])
+@limiter.limit("5 per hour")
 @jwt_required()
 @require_user_from_same_company()
 @require_permission("delete_user")
@@ -112,10 +119,12 @@ def delete_user_from_company(id: int):
     requesting_user_id: int = get_current_user_company().user_id
 
     user_service.delete_user_from_company(id, requesting_user_id)
+    logger.info("User deleted: id=%s", id)
     return make_response({"msg": "User deleted successfully"}, 200)
 
 
 @users_companies_blueprint.route("/get-users-from-company", methods=["GET"])
+@limiter.limit("5 per hour")
 @jwt_required()
 @require_permission("read_user")
 @spectree.validate(
@@ -128,4 +137,5 @@ def delete_user_from_company(id: int):
 def get_users_from_company():
     company_id: int = get_current_user_company().company_id
     users = user_service.get_users_from_company(company_id)
+    logger.info("Users retrieved: company_id=%s", company_id)
     return make_response({"users": users}, 200)
