@@ -1,4 +1,4 @@
-from core.extensions import spectree
+from core.extensions import spectree, limiter
 
 from spectree import Response
 from flask import Blueprint, make_response
@@ -20,6 +20,9 @@ from .role_permission_model import (
 )
 from ..roles.role_repository import RoleRepository
 from ..users_companies.auth_helpers import get_current_user_company
+from core.logger import get_logger
+
+logger = get_logger(__name__)
 
 role_permission_repo = RolePermissionsRepository()
 role_repo = RoleRepository()
@@ -54,6 +57,7 @@ def handle_generic_error(error):
 # --------------------------------------------------------
 
 @role_permission_controller.route("/assign-permission-to-role", methods=["POST"])
+@limiter.limit("5 per minute")
 @jwt_required()
 @require_permission("assign_role_permission")
 @spectree.validate(
@@ -72,10 +76,12 @@ def assign_role_permission(json: AssignRolePermissionInput):
     company_id = user_data.company_id
 
     role_permission_service.assign_role_permission_service(data, company_id)
+    logger.info("Permission assigned to role: company_id=%s", company_id)
     return make_response({"msg": "Role Permission assigned successfuly"}, 201)
 
 
 @role_permission_controller.route("/update/<int:role_id>", methods=["PUT", "PATCH"])
+@limiter.limit("5 per minute")
 @jwt_required()
 @require_permission("update_role_permission")
 @spectree.validate(
@@ -94,6 +100,7 @@ def update_role_permission(role_id: int, json: UpdateRolePermissionInput):
     company_id = user_data.company_id
 
     role_permission_service.update_role_permission_service(role_id, data, company_id)
+    logger.info("Role permission updated: role_id=%s", role_id)
     return make_response({"msg": "Role Permission updated successfully"}, 200)
 
 
@@ -112,10 +119,12 @@ def list_role_permissions(role_id: int):
     company_id = user_data.company_id
     
     permissions = role_permission_service.list_permissions_by_role_id(role_id, company_id)
+    logger.info("Role permissions listed: role_id=%s company_id=%s", role_id, company_id)
     return make_response({"role_id": role_id, "permissions": permissions}, 200)
 
 
 @role_permission_controller.route("/revoke", methods=["DELETE"])
+@limiter.limit("5 per minute")
 @jwt_required()
 @require_permission("delete_role_permission")
 @spectree.validate(
@@ -134,5 +143,6 @@ def revoke_role_permission(json: DeleteRolePermissionInput):
     company_id = user_data.company_id
 
     role_permission_service.revoke_permission(data["role_id"], data["permission_id"], company_id)
+    logger.info("Permission revoked: role_id=%s permission_id=%s", data["role_id"], data["permission_id"])
     return make_response({"msg": "Permission revoked successfully"}, 200)
 
