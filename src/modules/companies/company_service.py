@@ -49,13 +49,13 @@ class CompanyService(BaseService):
     # Public functions
     # --------------------------------------------------------
 
-    def update_company(self, company_id: int, data: dict, requesting_role_id: int) -> None:
+    def update_company(self, company_id: int, data: dict, requesting_role_id: int) -> CompanyEntity:
         if not self._is_user_owner_of_company_or_from_company(requesting_role_id, company_id):
             raise InsufficientRolePrivileges()
         
         company_instance = self._get_company_or_raise(company_id)
         company_updated = self._update_instance_entity(data, company_instance)
-        self.company_repository.update_company(company_updated)
+        return self.company_repository.update_company(company_updated)
 
     def detail_company(self, company_id: int, requesting_role_id: int) -> dict:
         if not self._is_user_owner_of_company_or_from_company(requesting_role_id, company_id):
