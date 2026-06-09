@@ -83,9 +83,9 @@ def test_create_product_creates_stock():
     assert stock.product_id == product.id
 
 
-# # --------------------------------------------------------
-# # Get
-# # --------------------------------------------------------
+# --------------------------------------------------------
+# Get
+# --------------------------------------------------------
 
 def test_get_product_by_id_success():
     _, company_id, _ = _register_owner(USER_DATA, COMPANY_DATA)
@@ -132,9 +132,9 @@ def test_get_all_products():
     assert len(products) == 2
 
 
-# # --------------------------------------------------------
-# # Update
-# # --------------------------------------------------------
+# --------------------------------------------------------
+# Update
+# --------------------------------------------------------
 
 def test_update_product_success():
     _, company_id, _ = _register_owner(USER_DATA, COMPANY_DATA)
@@ -152,9 +152,9 @@ def test_update_product_not_found():
         product_service.update_product(99999, {"name": "New Name"})
 
 
-# # --------------------------------------------------------
-# # Deactivate
-# # --------------------------------------------------------
+# --------------------------------------------------------
+# Deactivate
+# --------------------------------------------------------
 
 def test_deactivate_product_success():
     _, company_id, _ = _register_owner(USER_DATA, COMPANY_DATA)
@@ -189,9 +189,9 @@ def test_deactivate_product_zeros_stock():
     assert stock.quantity == 0
 
 
-# # --------------------------------------------------------
-# # Multi-tenant isolation
-# # --------------------------------------------------------
+# --------------------------------------------------------
+# Multi-tenant isolation
+# --------------------------------------------------------
 
 def test_products_isolated_between_companies():
     _, company_a_id, _ = _register_owner(USER_DATA, COMPANY_DATA)
