@@ -3,7 +3,6 @@ from .database import Database
 from modules.users.user_entity import UserEntity
 from modules.products.product_entity import ProductEntity
 from modules.categories.category_entity import CategoryEntity
-from modules.suppliers.supplier_entity import SupplierEntity
 from modules.stock.stock_entity import StockEntity
 from modules.companies.company_entity import CompanyEntity
 from modules.roles.role_entity import RoleEntity

@@ -14,7 +14,6 @@ from modules.role_permissions.role_permissions_entity import RolePermissionEntit
 from modules.categories.category_entity import CategoryEntity
 from modules.products.product_entity import ProductEntity
 from modules.stock.stock_entity import StockEntity
-from modules.suppliers.supplier_entity import SupplierEntity
 
 _test_engine = create_engine("sqlite:///:memory:", connect_args={"check_same_thread": False})
 Database._engine = _test_engine
