@@ -10,11 +10,11 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from spectree import SpecTree
 from spectree.models import SecurityScheme
 from flask_talisman import Talisman
+from flask_caching import Cache
 
 # Loading environment variables
 load_dotenv()
 
-_is_dev = os.getenv("FLASK_ENV") == "development"
 
 # Flask
 # https://flask.palletsprojects.com/en/stable/
@@ -68,11 +68,14 @@ spectree = SpecTree(
 # Flask-Talisman
 talisman = Talisman(
     app,
-    force_https=not _is_dev,
-    strict_transport_security=not _is_dev,
+    force_https=False,
+    strict_transport_security=False,
     strict_transport_security_max_age=31536000,
     strict_transport_security_include_subdomains=True,
     x_content_type_options=True,
     frame_options="SAMEORIGIN",
     content_security_policy=False,
 )
+
+# Flask-Caching
+cache = Cache(app, config={"CACHE_TYPE": "SimpleCache", "CACHE_DEFAULT_TIMEOUT": 30})
