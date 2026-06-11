@@ -26,7 +26,6 @@ from modules.users_companies.users_companies_entity import UsersCompaniesEntity
 from modules.categories.category_entity import CategoryEntity
 from modules.products.product_entity import ProductEntity
 from modules.stock.stock_entity import StockEntity
-from modules.suppliers.supplier_entity import SupplierEntity
 
 config = context.config
 
