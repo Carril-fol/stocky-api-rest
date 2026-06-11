@@ -4,7 +4,8 @@ from flask_jwt_extended import jwt_required
 from spectree import Response
 
 from core.logger import get_logger
-from core.extensions import spectree
+from core.extensions import spectree, cache
+
 from .product_service import ProductService
 from .product_repository import ProductRepository
 from .product_model import (
@@ -35,6 +36,16 @@ product_controller = Blueprint(
     __name__,
     url_prefix="/products/api/v1"
 )
+
+# --------------------------------------------------------
+# Helpers
+# --------------------------------------------------------
+
+def _products_list_key():
+    company_id = get_current_user_company().company_id
+    page = request.args.get('page', '1')
+    per_page = request.args.get('per_page', '10')
+    return f"products:all:{company_id}:{page}:{per_page}"
 
 
 # --------------------------------------------------------
@@ -147,6 +158,7 @@ def deactivate_product(id: int):
 @product_controller.route("/get/all", methods=["GET"])
 @jwt_required()
 @require_permission("read_product")
+@cache.cached(key_prefix=_products_list_key)
 @spectree.validate(
     resp=Response(
         HTTP_200=ListDetailProductModel,
