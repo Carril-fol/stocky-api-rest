@@ -35,8 +35,7 @@ src/
 │   ├── role_permissions/   # RBAC middleware
 │   ├── categories/
 │   ├── products/
-│   ├── stock/
-│   └── suppliers/
+│   └── stock/
 └── seeds/                  # Permissions seeder
 tests/                      # Pytest test suite
 ```
