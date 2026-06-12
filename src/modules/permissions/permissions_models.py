@@ -1,7 +1,13 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator, Field
 
 class CRUDPermissionBase(BaseModel):
-    name: str
+    name: str = Field(..., min_length=3, max_length=100)
+
+    @field_validator("*", mode="before")
+    def convert_to_uppercase(cls, value):
+        if isinstance(value, str):
+            return value.upper()
+        return value
 
 
 class PermissionModel(CRUDPermissionBase):
