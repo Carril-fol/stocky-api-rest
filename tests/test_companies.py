@@ -1,5 +1,4 @@
 import pytest
-from pydantic import ValidationError
 
 from modules.users.user_orchestrator import user_service
 from modules.companies.company_orchestrator import company_service
