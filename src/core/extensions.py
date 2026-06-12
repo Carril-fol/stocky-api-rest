@@ -44,8 +44,10 @@ cors = CORS(
 limiter = Limiter(
     get_remote_address,
     app=app,
-    default_limits=["60 per minute", "1000 per hour"]
+    default_limits=["60 per minute", "1000 per hour"],
+    storage_uri=os.getenv("REDIS_URL", "redis://redis:6379")
 )
+
 
 # Spectree
 spectree = SpecTree(
