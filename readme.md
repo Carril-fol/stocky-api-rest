@@ -144,3 +144,71 @@ pytest tests/test_users.py -v      # specific file
 alembic upgrade head                                    # apply migrations
 alembic revision --autogenerate -m "description"        # generate new migration
 ```
+
+## Quick start
+
+The typical flow is: after registration or login, the server sets an authentication cookie. The client then uses that cookie automatically when making requests to protected endpoints.
+
+All examples use `curl`. The `-c cookies.txt` flag saves the JWT cookie on login; `-b cookies.txt` sends it on subsequent requests.
+
+### 1. Register (creates company + owner user)
+
+```bash
+curl -s -X POST http://localhost:8000/users/api/v1/register \
+  -H "Content-Type: application/json" \
+  -c cookies.txt \
+  -d '{
+    "user": {
+      "first_name": "John",
+      "last_name": "Doe",
+      "email": "john@acme.com",
+      "password": "secret123",
+      "confirm_password": "secret123"
+    },
+    "company": {
+      "name": "Acme Corp",
+      "country": "Argentina",
+      "address": "Av. Corrientes 1234"
+    }
+  }'
+```
+
+### 2. Login
+
+```bash
+curl -s -X POST http://localhost:8000/users/api/v1/login \
+  -H "Content-Type: application/json" \
+  -c cookies.txt \
+  -d '{
+    "email": "john@acme.com",
+    "password": "secret123"
+  }'
+```
+
+### 3. Create a product
+
+```bash
+curl -s -X POST http://localhost:8000/products/api/v1/create \
+  -H "Content-Type: application/json" \
+  -b cookies.txt \
+  -d '{
+    "name": "Laptop Pro 15",
+    "description": "High performance laptop",
+    "category_id": 1,
+    "quantity": 10
+  }'
+```
+
+### 4. List products
+
+```bash
+curl -s http://localhost:8000/products/api/v1/get/all \
+  -b cookies.txt
+```
+
+### 5. Logout
+
+```bash
+curl -s -X POST http://localhost:8000/users/api/v1/logout \
+  -b cookies.txt
+```
