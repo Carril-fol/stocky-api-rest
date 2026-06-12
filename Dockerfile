@@ -1,4 +1,4 @@
-FROM python:3.12-alpine3.18
+FROM python:3.13-alpine AS builder
 
 RUN apk add --no-cache \
     python3-dev \
@@ -6,12 +6,25 @@ RUN apk add --no-cache \
     gcc \
     musl-dev
 
-RUN pip3 install --upgrade pip
-
-WORKDIR /restful-inventory-management-system 
-
-COPY . /restful-inventory-management-system
+COPY requirements.txt .
 
 RUN pip3 --no-cache-dir install -r requirements.txt
+
+
+FROM python:3.13-alpine AS final
+
+RUN apk add --no-cache libpq
+
+WORKDIR /inventra-api
+
+ENV FLASK_ENV=production
+
+COPY --from=builder /usr/local/lib/python3.13 /usr/local/lib/python3.13
+COPY --from=builder /usr/local/bin /usr/local/bin
+
+
+COPY src/ ./src/
+COPY alembic/ ./alembic/
+COPY alembic.ini .
 
 CMD ["python", "src/app.py"]
