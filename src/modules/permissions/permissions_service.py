@@ -38,7 +38,8 @@ class PermissionService(BaseService):
         ).model_dump()
 
     def create_permission(self, data: dict):
-        existing = self._permission_repo.get_permission_by_name(data["name"])
+        normalized_name = data["name"].upper()
+        existing = self._permission_repo.get_permission_by_name(normalized_name)
         if existing:
             raise PermissionAlreadyExists()
 
@@ -47,4 +48,4 @@ class PermissionService(BaseService):
         ).model_dump()
 
         permission = PermissionsEntity(**permission_data)
-        self._permission_repo.create_permission(permission)
+        return self._permission_repo.create_permission(permission)
