@@ -17,8 +17,9 @@ class DetailRolePermissionModel(CRUDRolePermissionModel):
 # Update
 # --------------------------------------------------------
 
-class UpdateRolePermissionModel(CRUDRolePermissionModel):
-    pass
+class UpdateRolePermissionModel(BaseModel):
+    role_id: int
+    permission_id: int
 
 
 class UpdateRolePermissionInput(UpdateRolePermissionModel):
